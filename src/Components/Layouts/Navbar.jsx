@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
     Stack,
     Typography,
@@ -28,14 +28,41 @@ import CloseIcon from "@mui/icons-material/Close";
 
 import logo from "../../assets/Images/Bitey_burger_and_pizza_logo-removebg-preview.png";
 import ModalLocation from "../Ui/ModalLocation";
+import Cart from "../Ui/Cart";
 
 const Navbar = () => {
+
+
+
+
+
+
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
     const [open, setOpen] = useState(false);
+    const [cart, setCart] = useState(false);
     const [openModal, setOpenModal] = useState(false);
     const [anchorEl, setAnchorEl] = useState(null);
+    const [location, setLocation] = useState(false);
+
+
+    let orderInfo = localStorage.getItem("orderInfo");
+    let orderInfoParse = JSON.parse(orderInfo);
+   
+        useEffect(() => {
+            try {
+
+                if (!orderInfoParse) {
+                    setOpenModal(true);
+                }
+            } catch (error) {
+                setOpenModal(true);
+            }
+        }, []);
+
+
+
 
     const menuItems = [
         "Burger's",
@@ -93,23 +120,23 @@ const Navbar = () => {
                                 >
                                     <Stack direction="row" alignItems="center">
                                         <Typography fontWeight="bold">
-                                            Pick-up from
+                                            {`${orderInfoParse?.type}`} from
                                         </Typography>
                                         <KeyboardArrowDownIcon />
                                     </Stack>
 
                                     <Typography fontSize={12}>
-                                        Hussainabad Food street, Karachi
+                                        {orderInfoParse?.address || "Hussainabad Food street, Karachi"}
                                     </Typography>
                                 </Stack>
                             </Stack>
                         </Stack>
-
+                        <Cart open={cart} setOpen={setCart} />
                         {/* RIGHT */}
                         <Stack direction="row" alignItems="center" spacing={2}>
                             {!isMobile && (
                                 <>
-                                    <IconButton sx={{ bgcolor: "#fff" }}>
+                                    <IconButton onClick={() => setCart(true)} sx={{ bgcolor: "#fff" }}>
                                         <Badge badgeContent={1} color="error">
                                             <ShoppingBagIcon />
                                         </Badge>
@@ -148,7 +175,7 @@ const Navbar = () => {
                                 Sign In / Register
                             </Button>
 
-                            <IconButton>
+                            <IconButton onClick={() => setCart(true)}>
                                 <Badge badgeContent={1} color="error">
                                     <ShoppingBagIcon />
                                 </Badge>
@@ -156,145 +183,150 @@ const Navbar = () => {
                         </Stack>
                     </Box>
                 </Drawer>
+                <Container />
 
                 {/* 🔴 APPBAR */}
-                <AppBar position="static" sx={{ background: "#E53935" }}>
-                    <Container>
-                        <Toolbar
+                <AppBar position="static" sx={{ background: "#E53935" }} elevation={0}>
+
+                    <Toolbar
+                        sx={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                            gap: 2,
+                            flexWrap: "wrap", // 🔥 responsive
+                        }}
+                    >
+                        {/* LEFT MENU */}
+                        <Box sx={{ display: "flex", flexWrap: "wrap", gap: isMobile ? 0 : 2 }}>
+                            {isMobile ?
+
+                                <Stack direction="row" alignItems="center" justifyContent={"center"} spacing={0} mt={"10px"} p={0}>
+
+                                    <Button sx={{ color: "#fff", fontSize: isMobile && 10, fontWeight: 700 }}>Burgers</Button>
+                                    <Button sx={{ color: "#fff", fontSize: isMobile && 10, fontWeight: 700 }}>Broast</Button>
+                                    <Button sx={{ color: "#fff", fontSize: isMobile && 10, fontWeight: 700 }}>B.b.q</Button>
+
+                                    <Box
+                                        onMouseEnter={(e) => setAnchorEl(e.currentTarget)}
+                                        onMouseLeave={() => setAnchorEl(null)}
+                                    >
+                                        <Button sx={{ color: "#fff", fontSize: isMobile && 10, fontWeight: 700 }}>
+                                            More Menu <ArrowDropDownIcon />
+                                        </Button>
+
+                                        <Menu
+                                            anchorEl={anchorEl}
+                                            open={Boolean(anchorEl)}
+                                            onClose={() => setAnchorEl(null)}
+                                            PaperProps={{
+                                                sx: {
+                                                    backgroundColor: "#f3a32b", // 🔥 yahan color set
+                                                    color: "#fff",
+                                                    borderRadius: "10px",
+                                                    mt: 1,
+                                                },
+                                            }}
+                                        >
+                                            {menuItems.map((item, i) => (
+                                                <MenuItem
+                                                    key={i}
+                                                    sx={{
+                                                        "&:hover": {
+                                                            backgroundColor: "rgba(0,0,0,0.1)", // hover effect 🔥
+                                                        },
+                                                    }}
+                                                >
+                                                    {item}
+                                                </MenuItem>
+                                            ))}
+                                        </Menu>
+                                    </Box>
+                                </Stack>
+                                :
+                                <>
+                                    <Button sx={{ color: "#fff", fontSize: isMobile && 11, fontWeight: 800 }}>Burgers</Button>
+                                    <Button sx={{ color: "#fff", fontSize: isMobile && 11, fontWeight: 800 }}>Broast</Button>
+                                    <Button sx={{ color: "#fff", fontSize: isMobile && 11, fontWeight: 800 }}>Sandwich</Button>
+                                    <Button sx={{ color: "#fff", fontSize: isMobile && 11, fontWeight: 800 }}>Pizza</Button>
+                                    <Button sx={{ color: "#fff", fontSize: isMobile && 11, fontWeight: 800 }}>Pizza Sandwich</Button>
+                                    <Button sx={{ color: "#fff", fontSize: isMobile && 11, fontWeight: 800 }}>Pasta</Button>
+                                    <Button sx={{ color: "#fff", fontSize: isMobile && 11, fontWeight: 800 }}>B.b.q</Button>
+                                    <Button sx={{ color: "#fff", fontSize: isMobile && 11, fontWeight: 800 }}>ROll</Button>
+
+                                    <Box
+                                        onMouseEnter={(e) => setAnchorEl(e.currentTarget)}
+                                        onMouseLeave={() => setAnchorEl(null)}
+                                    >
+                                        <Button sx={{ color: "#ffa96b", fontSize: isMobile && 10, fontWeight: 800 }}>
+                                            More Menu <ArrowDropDownIcon />
+                                        </Button>
+
+                                        <Menu
+                                            anchorEl={anchorEl}
+                                            open={Boolean(anchorEl)}
+                                            onClose={() => setAnchorEl(null)}
+                                            PaperProps={{
+                                                sx: {
+                                                    backgroundColor: "#f3a32b", // 🔥 yahan color set
+                                                    color: "#fff",
+                                                    borderRadius: "10px",
+                                                    mt: 1,
+                                                },
+                                            }}
+                                        >
+                                            {menuItems.map((item, i) => (
+                                                <MenuItem
+                                                    key={i}
+                                                    sx={{
+                                                        "&:hover": {
+                                                            backgroundColor: "rgba(0,0,0,0.1)", // hover effect 🔥
+                                                        },
+                                                    }}
+                                                >
+                                                    {item}
+                                                </MenuItem>
+                                            ))}
+                                        </Menu>
+                                    </Box>
+
+                                </>
+                            }
+
+                        </Box>
+
+
+                        {/* 🔍 SEARCH BAR */}
+                        <Box
                             sx={{
-                                display: "flex",
-                                justifyContent: "space-between",
-                                alignItems: "center",
-                                gap: 2,
-                                flexWrap: "wrap", // 🔥 responsive
+                                flexGrow: { xs: 1, md: 0 },
+                                width: { xs: "100%", md: "300px" },
                             }}
                         >
-                            {/* LEFT MENU */}
-                            <Box sx={{ display: "flex", flexWrap: "wrap", gap: isMobile ? 0 : 2 }}>
-                                {isMobile ?
-
-                                    <Stack direction="row" alignItems="center" justifyContent={"center"} spacing={1}>
-
-                                        <Button sx={{ color: "#fff", fontSize: isMobile && 10 }}>Home</Button>
-                                        <Button sx={{ color: "#fff", fontSize: isMobile && 10 }}>About</Button>
-                                        <Button sx={{ color: "#fff", fontSize: isMobile && 10 }}>Contact</Button>
-
-
-                                        <Box
-                                            onMouseEnter={(e) => setAnchorEl(e.currentTarget)}
-                                            onMouseLeave={() => setAnchorEl(null)}
-                                        >
-                                            <Button sx={{ color: "#fff", fontSize: isMobile && 10 }}>
-                                                Menu <ArrowDropDownIcon />
-                                            </Button>
-
-                                            <Menu
-                                                anchorEl={anchorEl}
-                                                open={Boolean(anchorEl)}
-                                                onClose={() => setAnchorEl(null)}
-                                                PaperProps={{
-                                                    sx: {
-                                                        backgroundColor: "#f3a32b", // 🔥 yahan color set
-                                                        color: "#fff",
-                                                        borderRadius: "10px",
-                                                        mt: 1,
-                                                    },
-                                                }}
-                                            >
-                                                {menuItems.map((item, i) => (
-                                                    <MenuItem
-                                                        key={i}
-                                                        sx={{
-                                                            "&:hover": {
-                                                                backgroundColor: "rgba(0,0,0,0.1)", // hover effect 🔥
-                                                            },
-                                                        }}
-                                                    >
-                                                        {item}
-                                                    </MenuItem>
-                                                ))}
-                                            </Menu>
-                                        </Box>
-                                    </Stack>
-                                    :
-                                    <>
-                                        <Button sx={{ color: "#fff", fontSize: isMobile && 11 }}>Home</Button>
-                                        <Button sx={{ color: "#fff", fontSize: isMobile && 11 }}>About</Button>
-                                        <Button sx={{ color: "#fff", fontSize: isMobile && 11 }}>Contact</Button>
-
-                                        <Box
-                                            onMouseEnter={(e) => setAnchorEl(e.currentTarget)}
-                                            onMouseLeave={() => setAnchorEl(null)}
-                                        >
-                                            <Button sx={{ color: "#fff", fontSize: isMobile && 10 }}>
-                                                Menu <ArrowDropDownIcon />
-                                            </Button>
-
-                                            <Menu
-                                                anchorEl={anchorEl}
-                                                open={Boolean(anchorEl)}
-                                                onClose={() => setAnchorEl(null)}
-                                                PaperProps={{
-                                                    sx: {
-                                                        backgroundColor: "#f3a32b", // 🔥 yahan color set
-                                                        color: "#fff",
-                                                        borderRadius: "10px",
-                                                        mt: 1,
-                                                    },
-                                                }}
-                                            >
-                                                {menuItems.map((item, i) => (
-                                                    <MenuItem
-                                                        key={i}
-                                                        sx={{
-                                                            "&:hover": {
-                                                                backgroundColor: "rgba(0,0,0,0.1)", // hover effect 🔥
-                                                            },
-                                                        }}
-                                                    >
-                                                        {item}
-                                                    </MenuItem>
-                                                ))}
-                                            </Menu>
-                                        </Box>
-
-                                    </>
-                                }
-
-                            </Box>
-
-
-                            {/* 🔍 SEARCH BAR */}
-                            <Box
-                                sx={{
-                                    flexGrow: { xs: 1, md: 0 },
-                                    width: { xs: "100%", md: "300px" },
+                            <TextField
+                                fullWidth
+                                variant="standard"
+                                placeholder="Search for food..."
+                                InputProps={{
+                                    startAdornment: (
+                                        <InputAdornment position="start">
+                                            <SearchIcon sx={{ color: "#fff" }} />
+                                        </InputAdornment>
+                                    ),
                                 }}
-                            >
-                                <TextField
-                                    fullWidth
-                                    variant="standard"
-                                    placeholder="Search for food..."
-                                    InputProps={{
-                                        startAdornment: (
-                                            <InputAdornment position="start">
-                                                <SearchIcon sx={{ color: "#fff" }} />
-                                            </InputAdornment>
-                                        ),
-                                    }}
-                                    sx={{
-                                        "& input": { color: "#fff" },
-                                        "& .MuiInput-underline:before": {
-                                            borderBottomColor: "#fff",
-                                        },
-                                        "& .MuiInput-underline:after": {
-                                            borderBottomColor: "#fff",
-                                        },
-                                    }}
-                                />
-                            </Box>
-                        </Toolbar>
-                    </Container>
+                                sx={{
+                                    "& input": { color: "#fff" },
+                                    "& .MuiInput-underline:before": {
+                                        borderBottomColor: "#fff",
+                                    },
+                                    "& .MuiInput-underline:after": {
+                                        borderBottomColor: "#fff",
+                                    },
+                                }}
+                            />
+                        </Box>
+                    </Toolbar>
+
                 </AppBar>
 
                 <ModalLocation open={openModal} setOpen={setOpenModal} />

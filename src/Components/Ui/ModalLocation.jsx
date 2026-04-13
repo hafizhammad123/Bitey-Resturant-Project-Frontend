@@ -15,14 +15,94 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 import MyLocationIcon from "@mui/icons-material/MyLocation";
 import logo from "../../assets/Images/Bitey_burger_and_pizza_logo-removebg-preview.png";
+import axios from "axios";
+import Navbar from "../Layouts/Navbar";
 
 export default function ModalLocation({ open, setOpen }) {
-  const handleClose = () => setOpen(false);
+
+
+  const handleClose = () => {
+    let getInfo = localStorage.getItem("orderInfo");
+    if (!getInfo) {
+      alert("Please select your order type and location to proceed.");
+      return;
+    }
+    setOpen(false);
+  };
 
   // 🔥 states
   const [orderType, setOrderType] = React.useState("delivery");
   const [area, setArea] = React.useState("");
   const [branch, setBranch] = React.useState("");
+  const [location, setLocation] = React.useState();
+  const [loadingLocation, setLoadingLocation] = React.useState(false);
+
+  React.useEffect(() => {
+    console.log(location);
+
+  }, [location])
+
+
+  //deScturture //
+
+  const currentLocation = () => {
+    setLoadingLocation(true),
+      navigator.geolocation.getCurrentPosition(
+
+
+        async (position) => {
+
+
+          console.log(position.coords.latitude);
+          console.log(position.coords.longitude);
+
+          let res = await axios.get(
+            `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${position.coords.latitude}&lon=${position.coords.longitude}`
+          );
+
+          console.log(res.data);
+          setLocation(res.data.address);
+          console.log(res.data.address);
+          setArea(res.data.address.house_number + " " + res.data.address.road + " " + res.data.address.suburb);
+          setLoadingLocation(false);
+        },
+        (error) => {
+          console.log("Error:", error.message);
+          setLoadingLocation(false);
+        }
+      );
+  }
+
+
+
+  const dilveryAddress = location ? `${location.house_number || ""} ${location.road || ""} ${location.suburb || ""}` : "";
+
+  console.log("-----------------------------------" + area);
+
+  const getAdressDilvery = (address) => {
+    console.log("Delivery Address:", address);
+    let obj = {
+      type: "Delivery",
+      address: address
+    }
+    localStorage.setItem("orderInfo", JSON.stringify(obj));
+
+    handleClose();
+  }
+
+
+  const getAdressPickup = (address) => {
+    console.log("Pickup Address:", address);
+    let obj = {
+      type: "Pickup",
+      address: address
+    }
+    localStorage.setItem("orderInfo", JSON.stringify(obj));
+    handleClose();
+  }
+
+  // const { house_number, suburb, road } = location;
+
 
   return (
     <Modal
@@ -49,7 +129,7 @@ export default function ModalLocation({ open, setOpen }) {
         }}
       >
         <Stack spacing={2} alignItems="center">
-          
+
           {/* CLOSE BUTTON */}
           <Stack width="100%" direction="row" justifyContent="flex-end">
             <IconButton onClick={handleClose}>
@@ -112,9 +192,17 @@ export default function ModalLocation({ open, setOpen }) {
                   color: "#333",
                   px: 3,
                 }}
+                onClick={currentLocation}
               >
-                Use Current Location
+                {loadingLocation ? "fetching location..." : "Use Current Location"}
+
               </Button>
+
+              {location && (
+                <Typography fontSize={12} color="green">
+                  {location?.house_number} {location?.road} {location?.suburb}
+                </Typography>
+              )}
 
               <TextField
                 fullWidth
@@ -136,34 +224,21 @@ export default function ModalLocation({ open, setOpen }) {
                     borderRadius: 2,
                   }}
                 >
-                  <MenuItem value="" disabled>
-                    Select Area / Sub Region
+                  <MenuItem value={dilveryAddress ? dilveryAddress : ""}>
+                    {dilveryAddress ? dilveryAddress : "Select Area / Sub Region"}
                   </MenuItem>
+
                   <MenuItem value="nazimabad">Nazimabad</MenuItem>
                   <MenuItem value="gulshan">Gulshan</MenuItem>
                   <MenuItem value="clifton">Clifton</MenuItem>
+
+
                 </Select>
               </FormControl>
             </>
           ) : (
             <>
-              <Typography fontWeight="bold" fontSize={16}sx={{color:'#8a8888'}} textAlign="center">
-                Which outlet would you like to pick-up from?
-              </Typography>
-
-              <Button
-                startIcon={<MyLocationIcon />}
-                sx={{
-                  bgcolor: "#eee",
-                  borderRadius: 5,
-                  textTransform: "none",
-                  color: "#333",
-                  px: 3,
-                }}
-              >
-                Use Current Location
-              </Button>
-
+             
               <TextField
                 fullWidth
                 value="Karachi"
@@ -187,9 +262,8 @@ export default function ModalLocation({ open, setOpen }) {
                   <MenuItem value="" disabled>
                     Select Branch
                   </MenuItem>
-                  <MenuItem value="branch1">Branch 1 - Saddar</MenuItem>
-                  <MenuItem value="branch2">Branch 2 - DHA</MenuItem>
-                  <MenuItem value="branch3">Branch 3 - Gulshan</MenuItem>
+                  <MenuItem value="Yaseenabad, Plot no R 753, Block 9">Bitey - Yaseenabad, Plot no R 753, Block 9</MenuItem>
+                
                 </Select>
               </FormControl>
             </>
@@ -199,17 +273,17 @@ export default function ModalLocation({ open, setOpen }) {
           <Button
             fullWidth
             disabled={
-              orderType === "delivery" ? !area : !branch
+              orderType === "delivery" ? !(area || location) : !branch
             }
             sx={{
               bgcolor:
                 (orderType === "delivery" && area) ||
-                (orderType === "pickup" && branch)
+                  (orderType === "pickup" && branch)
                   ? "#f3a32b"
                   : "#ddd",
               color:
                 (orderType === "delivery" && area) ||
-                (orderType === "pickup" && branch)
+                  (orderType === "pickup" && branch)
                   ? "#fff"
                   : "#999",
               borderRadius: 2,
@@ -217,6 +291,7 @@ export default function ModalLocation({ open, setOpen }) {
               textTransform: "none",
               fontWeight: "bold",
             }}
+            onClick={orderType === "delivery" ? () => getAdressDilvery(area) : () => getAdressPickup(branch)}
           >
             Select
           </Button>
