@@ -17,22 +17,57 @@ import Slider from '../Components/Ui/Slider'
 const Home = () => {
   return (
     <>
-        <MainLayout>
-           <Slider/>
-           <PopularItems/>
-           <DealCards/>
-           <BurgersCard/>
-           <Broast/>
-           <SandWich/>
-           <Pizza/> 
-           <PizzaSandwich/>
-           <Pasta/>
-           <Lasagna/>
-           <Bbq/>
-           <Roll/>
-           <Fries/>
-           <Extra />
-        </MainLayout>     
+      <MainLayout >
+        <div id='home'>
+          <Slider />
+        </div>
+
+        <PopularItems />
+        <DealCards />
+        <div id="burger">
+          <BurgersCard />
+        </div>
+
+        <div id="broast">
+          <Broast />
+        </div>
+
+        <div id="sandwich">
+          <SandWich />
+        </div>
+
+        <div id="pizza">
+          <Pizza />
+        </div>
+
+        <div id="pizzaSandwich">
+          <PizzaSandwich />
+        </div>
+
+        <div id="pasta">
+          <Pasta />
+        </div>
+
+        <div id="lasagna">
+          <Lasagna />
+        </div>
+
+        <div id="bbq">
+          <Bbq />
+        </div>
+
+        <div id="roll">
+          <Roll />
+        </div>
+
+        <div id="fries">
+          <Fries />
+        </div>
+
+        <div id="extra">
+          <Extra />
+        </div>
+      </MainLayout>
     </>
   )
 }

@@ -3,16 +3,18 @@ import Footer from './Footer'
 import Navbar from './Navbar'
 
 
-const MainLayout = ({children}) => {
+const MainLayout = ({ children }) => {
   return (
-   <>
-    <Announcement />
-    <Navbar/>
- 
-    {children}
+    <>
+      <Announcement />
+    
+        <Navbar/>
+    
 
-    <Footer/>
-   </>
+      {children}
+
+      <Footer />
+    </>
   )
 }
 

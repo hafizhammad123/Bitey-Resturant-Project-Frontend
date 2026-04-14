@@ -32,11 +32,6 @@ import Cart from "../Ui/Cart";
 
 const Navbar = () => {
 
-
-
-
-
-
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
@@ -49,42 +44,49 @@ const Navbar = () => {
 
     let orderInfo = localStorage.getItem("orderInfo");
     let orderInfoParse = JSON.parse(orderInfo);
-   
-        useEffect(() => {
-            try {
 
-                if (!orderInfoParse) {
-                    setOpenModal(true);
-                }
-            } catch (error) {
+    useEffect(() => {
+        try {
+
+            if (!orderInfoParse) {
                 setOpenModal(true);
             }
-        }, []);
+        } catch (error) {
+            setOpenModal(true);
+        }
+    }, []);
 
+    const handleScroll = (id) => {
+        const element = document.getElementById(id);
 
+        const y = element.getBoundingClientRect().top + window.pageYOffset + -100;
 
+        window.scrollTo({
+            top: y,
+            behavior: "smooth",
+        });
+    };
 
     const menuItems = [
-        "Burger's",
-        "Broast",
-        "Sandwich",
-        "Fries",
-        "Pizza",
-        "Pizza Sandwich",
-        "Pasta",
-        "Lasagna",
-        "B.B.Q",
-        "Roll",
-        "Crispy Roll",
-        "Extra",
+        { menuName: "Burger's", menuId: "burger" },
+        { menuName: "Broast", menuId: "broast" },
+        { menuName: "Sandwich", menuId: "sandwich" },
+        { menuName: "Pizza", menuId: "pizza" },
+        { menuName: "Pizza Sandwich", menuId: "pizzaSandwich" },
+        { menuName: "Pasta", menuId: "pasta" },
+        { menuName: "Lasagna", menuId: "lasagna" },
+        { menuName: "BBQ", menuId: "bbq" },
+        { menuName: "Roll", menuId: "roll" },
+        { menuName: "Fries", menuId: "fries" },
+        { menuName: "Extra", menuId: "extra" },
     ];
 
     return (
         <>
-            <Box sx={{ position: "sticky", top: 0, zIndex: 1100 }}>
+            <Box   sx={{ position: "sticky", top: 0, zIndex: 1200 }}>
 
                 {/* 🔶 TOP BAR */}
-                <Stack
+                <Stack 
                     direction="row"
                     alignItems="center"
                     justifyContent="space-between"
@@ -186,7 +188,7 @@ const Navbar = () => {
                 <Container />
 
                 {/* 🔴 APPBAR */}
-                <AppBar position="static" sx={{ background: "#E53935" }} elevation={0}>
+                <AppBar  position="static" sx={{  background: "#E53935", }} elevation={0}>
 
                     <Toolbar
                         sx={{
@@ -202,10 +204,26 @@ const Navbar = () => {
                             {isMobile ?
 
                                 <Stack direction="row" alignItems="center" justifyContent={"center"} spacing={0} mt={"10px"} p={0}>
+                                    <Button
+                                        sx={{ color: "#fff", fontSize: isMobile && 10, fontWeight: 700 }}
+                                        onClick={() => handleScroll("burger")}
+                                    >
+                                        Burgers
+                                    </Button>
 
-                                    <Button sx={{ color: "#fff", fontSize: isMobile && 10, fontWeight: 700 }}>Burgers</Button>
-                                    <Button sx={{ color: "#fff", fontSize: isMobile && 10, fontWeight: 700 }}>Broast</Button>
-                                    <Button sx={{ color: "#fff", fontSize: isMobile && 10, fontWeight: 700 }}>B.b.q</Button>
+                                    <Button
+                                        sx={{ color: "#fff", fontSize: isMobile && 10, fontWeight: 700 }}
+                                        onClick={() => handleScroll("broast")}
+                                    >
+                                        Broast
+                                    </Button>
+
+                                    <Button
+                                        sx={{ color: "#fff", fontSize: isMobile && 10, fontWeight: 700 }}
+                                        onClick={() => handleScroll("bbq")}
+                                    >
+                                        B.B.Q
+                                    </Button>
 
                                     <Box
                                         onMouseEnter={(e) => setAnchorEl(e.currentTarget)}
@@ -230,30 +248,44 @@ const Navbar = () => {
                                         >
                                             {menuItems.map((item, i) => (
                                                 <MenuItem
-                                                    key={i}
+                                                    key={item.menuId}
+                                                    onClick={() => {
+                                                        handleScroll(item.menuId);
+                                                        setAnchorEl(null);
+                                                    }}   // ✅ scroll
                                                     sx={{
                                                         "&:hover": {
-                                                            backgroundColor: "rgba(0,0,0,0.1)", // hover effect 🔥
+                                                            backgroundColor: "rgba(0,0,0,0.1)",
                                                         },
                                                     }}
                                                 >
-                                                    {item}
+                                                    {item.menuName}   {/* ✅ name show */}
                                                 </MenuItem>
                                             ))}
+
                                         </Menu>
                                     </Box>
                                 </Stack>
                                 :
                                 <>
-                                    <Button sx={{ color: "#fff", fontSize: isMobile && 11, fontWeight: 800 }}>Burgers</Button>
-                                    <Button sx={{ color: "#fff", fontSize: isMobile && 11, fontWeight: 800 }}>Broast</Button>
-                                    <Button sx={{ color: "#fff", fontSize: isMobile && 11, fontWeight: 800 }}>Sandwich</Button>
-                                    <Button sx={{ color: "#fff", fontSize: isMobile && 11, fontWeight: 800 }}>Pizza</Button>
-                                    <Button sx={{ color: "#fff", fontSize: isMobile && 11, fontWeight: 800 }}>Pizza Sandwich</Button>
-                                    <Button sx={{ color: "#fff", fontSize: isMobile && 11, fontWeight: 800 }}>Pasta</Button>
-                                    <Button sx={{ color: "#fff", fontSize: isMobile && 11, fontWeight: 800 }}>B.b.q</Button>
-                                    <Button sx={{ color: "#fff", fontSize: isMobile && 11, fontWeight: 800 }}>ROll</Button>
+                                    <Button onClick={() => {
+                                        handleScroll("burger");
+                                    }} sx={{ color: "#fff", fontSize: isMobile && 11, fontWeight: 800 }}>Burgers</Button>
+                                    <Button sx={{ color: "#fff", fontSize: isMobile && 11, fontWeight: 800 }} onClick={() => handleScroll("broast")}>Broast</Button>
 
+                                    <Button sx={{ color: "#fff", fontSize: isMobile && 11, fontWeight: 800 }} onClick={() => handleScroll("sandwich")}>Sandwich</Button>
+
+                                    <Button sx={{ color: "#fff", fontSize: isMobile && 11, fontWeight: 800 }} onClick={() => handleScroll("pizza")}>Pizza</Button>
+
+                                    <Button sx={{ color: "#fff", fontSize: isMobile && 11, fontWeight: 800 }} onClick={() => handleScroll("pasta")}>Pasta</Button>
+
+                                    <Button sx={{ color: "#fff", fontSize: isMobile && 11, fontWeight: 800 }} onClick={() => handleScroll("bbq")}>Bbq</Button>
+
+                                    <Button sx={{ color: "#fff", fontSize: isMobile && 11, fontWeight: 800 }} onClick={() => handleScroll("roll")}>Roll</Button>
+
+                                    <Button sx={{ color: "#fff", fontSize: isMobile && 11, fontWeight: 800 }} onClick={() => handleScroll("lasagna")}>Lasagna</Button>
+
+                                    <Button sx={{ color: "#fff", fontSize: isMobile && 11, fontWeight: 800 }} onClick={() => handleScroll("extra")}>Extra</Button>
                                     <Box
                                         onMouseEnter={(e) => setAnchorEl(e.currentTarget)}
                                         onMouseLeave={() => setAnchorEl(null)}
@@ -277,14 +309,19 @@ const Navbar = () => {
                                         >
                                             {menuItems.map((item, i) => (
                                                 <MenuItem
-                                                    key={i}
+                                                    key={item.menuId}
+                                                    onClick={() => {
+                                                        handleScroll(item.menuId);
+                                                        setAnchorEl(null);
+                                                    }}
+
                                                     sx={{
                                                         "&:hover": {
-                                                            backgroundColor: "rgba(0,0,0,0.1)", // hover effect 🔥
+                                                            backgroundColor: "rgba(0,0,0,0.1)",
                                                         },
                                                     }}
                                                 >
-                                                    {item}
+                                                    {item.menuName}   {/* ✅ name show */}
                                                 </MenuItem>
                                             ))}
                                         </Menu>
@@ -330,7 +367,7 @@ const Navbar = () => {
                 </AppBar>
 
                 <ModalLocation open={openModal} setOpen={setOpenModal} />
-            </Box>
+            </Box >
         </>
     );
 };

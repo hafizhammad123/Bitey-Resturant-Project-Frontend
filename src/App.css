@@ -1,5 +1,60 @@
-*{
-  padding: 0;
+
+* {
   margin: 0;
+  padding: 0;
   box-sizing: border-box;
+}
+
+/* =========================
+   🌍 Smooth Scrolling
+========================= */
+html {
+  scroll-behavior: smooth;
+}
+
+/* =========================
+   🌈 Scrollbar Base
+========================= */
+::-webkit-scrollbar {
+  width: 8px;   /* slim professional look */
+}
+
+/* =========================
+   🧊 Track (background)
+========================= */
+::-webkit-scrollbar-track {
+  background: #7e7c7c; /* dark modern UI feel */
+  border-radius: 20px;
+}
+
+/* =========================
+   🔥 Thumb (scroll handle)s
+========================= */
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(
+    180deg,
+    #f3a32b,
+    #e53935
+  );
+  border-radius: 20px;
+  border: 2px solid #0f0f0f; /* floating effect */
+}
+
+/* =========================
+   ✨ Hover Effect
+========================= */
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(
+    180deg,
+    #ffb347,
+    #ff3b3b
+  );
+}
+
+/* =========================
+   🧠 Firefox Support
+========================= */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #f3a32b #0f0f0f;
 }
