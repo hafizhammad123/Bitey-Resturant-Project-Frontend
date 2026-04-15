@@ -282,5 +282,8 @@ export default function Cart({ open, setOpen }) {
         </Box>
       </Stack>
     </Drawer>
+
+
+
   );
 }

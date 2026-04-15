@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
     Box,
     Container,
@@ -7,37 +7,32 @@ import {
     useMediaQuery,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
+import { useState } from "react";
+import axios from "axios";
+import { BaseUrl } from "../util";
 
-const items = [
-    {
-        title: "Chicken Malai Boti",
-        img: "https://hassanzaikoylakarahi.pk/_next/image?url=https%3A%2F%2Fassets.indolj.io%2Fupload%2F1770717239-WhatsApp%20Image%202026-02-04%20at%201.53.16%20PM%20(1).jpeg&w=3840&q=75",
-        oldPrice: 840,
-        newPrice: 756,
-    },
-    {
-        title: "Chicken Dhaga Kabab",
-        img: "https://i.ytimg.com/vi/6f485omblws/sddefault.jpg",
-        oldPrice: 680,
-        newPrice: 612,
-    },
-    {
-        title: "Chicken Resham Kabab",
-        img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQaNBQMxSJtrC2Ik3RFw1PUazPI6o7jYcWjAw&s",
-        oldPrice: 720,
-        newPrice: 648,
-    },
-    {
-        title: "Beef Dhaga Kabab",
-        img: "https://havelikebabandgril.com.pk/_next/image?url=https%3A%2F%2Fassets.indolj.io%2Fupload%2F1760082757-Chicken%20Malai%20boti.webp&w=3840&q=75",
-        oldPrice: 660,
-        newPrice: 594,
-    },
-];
 
 const PopularItems = () => {
+
+    const [popularitems, setPopularItems] = useState([]);
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
+    useEffect(() => {
+        getPopularItems();
+    }, []);
+
+    const getPopularItems = async () => {
+        try {
+            const getData = await axios.get(`${BaseUrl}/popularItem/get`)
+            console.log(getData.data.data);
+
+            setPopularItems(getData.data.data);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
 
     return (
         <Container maxWidth="lg">
@@ -57,7 +52,7 @@ const PopularItems = () => {
                     justifyContent="space-between"
                     gap={2}
                 >
-                    {items.map((item, i) => (
+                    {popularitems.map((item, i) => (
                         <Box
                             key={i}
                             sx={{
@@ -88,8 +83,8 @@ const PopularItems = () => {
                             {/* Image */}
                             <Box
                                 component="img"
-                                src={item.img}
-                                alt={item.title}
+                                src={item.image}
+                                alt={"Popular Item"}
                                 sx={{
                                     width: "100%",
                                     height: "100%",
@@ -150,9 +145,9 @@ const PopularItems = () => {
                                             marginRight: 6,
                                         }}
                                     >
-                                        Rs. {item.oldPrice}
+                                        Rs. {""}
                                     </span>
-                                    Rs. {item.newPrice}
+                                    Rs. {item.price}
                                 </Box>
                             </Box>
                         </Box>
