@@ -10,6 +10,8 @@ import { useTheme } from "@mui/material/styles";
 import { useState } from "react";
 import axios from "axios";
 import { BaseUrl } from "../util";
+import DetailModal from "../Ui/DetailModal";
+import { useDispatch } from "react-redux";
 
 
 const PopularItems = () => {
@@ -17,6 +19,10 @@ const PopularItems = () => {
     const [popularitems, setPopularItems] = useState([]);
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+    const [open, setOpen] = useState(false)
+    const [detailData, setDetailData] = useState([])
+
+    const dispatch = useDispatch()
 
     useEffect(() => {
         getPopularItems();
@@ -33,16 +39,50 @@ const PopularItems = () => {
         }
     }
 
+    const openDetailPage = async (id) => {
+        setOpen(true)
+        console.log("detail Api fun Call");
+
+        try {
+            const res = await axios.get(`${BaseUrl}/popularItem/detail/${id}`)
+            console.log(res.data.data)
+            setDetailData(res.data.data)
+        }
+        catch (error) {
+            console.log(error); // full error console me
+
+            let message = "";
+
+            if (error.response) {
+                // server ne response diya (4xx, 5xx)
+                message = error.response.data?.message || error.response.statusText;
+            } else if (error.request) {
+                // request gayi lekin response nahi aaya
+                message = "No response from server";
+            } else {
+                // request setup error
+                message = error.message;
+            }
+
+            alert(message);
+        }
+
+    }
+
+
+    
+
 
     return (
         <Container maxWidth="lg">
+            <DetailModal open={open} setOpen={setOpen} deatailData={detailData} />
             <Box sx={{ py: 2 }}>
                 {/* Heading */}
                 <Typography variant="h6" color="#E53935" fontWeight="bold">
                     Popular Items
                 </Typography>
                 <Typography variant="body2" color="black" mb={3}>
-                    Most ordered right now
+                    Most ordered right nows
                 </Typography>
 
                 {/* Cards */}
@@ -53,7 +93,8 @@ const PopularItems = () => {
                     gap={2}
                 >
                     {popularitems.map((item, i) => (
-                        <Box
+
+                        <Box onClick={() => openDetailPage(item._id)}
                             key={i}
                             sx={{
                                 width: {
@@ -80,6 +121,7 @@ const PopularItems = () => {
                                 },
                             }}
                         >
+
                             {/* Image */}
                             <Box
                                 component="img"

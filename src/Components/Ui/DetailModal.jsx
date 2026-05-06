@@ -7,13 +7,38 @@ import {
   IconButton,
   TextField,
   Button,
+  FormControl,
+  FormLabel,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
+import { useDispatch } from "react-redux";
+import { action } from "../../Redux/Slice/cart";
 
-export default function DetailModal({ open, setOpen, image }) {
+export default function DetailModal({ open, setOpen, deatailData }) {
   const handleClose = () => setOpen(false);
 
   const [qty, setQty] = React.useState(1);
+  const [selectedDrink, setSelectedDrink] = React.useState("Pepsi");
+
+  const dispatch = useDispatch()
+
+  const { image, price, title } = deatailData || {};
+  const { addItem } = action
+
+  let total = qty * (price || 0);
+
+
+
+  const handleAddToCart = () => {
+
+    dispatch(addItem({ ...deatailData, qty }))
+    alert("your item add to Cart successfuly🎉🎉")
+
+  };
+
 
   return (
     <Modal
@@ -39,18 +64,14 @@ export default function DetailModal({ open, setOpen, image }) {
           overflow: "hidden",
         }}
       >
-        {/* MAIN CONTAINER */}
-        <Stack
-          direction={{ xs: "column", md: "row" }}
-          height="100%"
-        >
+        <Stack direction={{ xs: "column", md: "row" }} height="100%">
+
           {/* LEFT IMAGE */}
           <Box
             sx={{
               width: { xs: "100%", md: "50%" },
               height: { xs: 250, md: "100%" },
-              backgroundImage: image ? `url(${image})` :
-                "url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR8B_B2OV26TBhGd0IcfNDnhsrILbYdAMVDZg&s')",
+              backgroundImage: `url(${image})`,
               backgroundSize: "cover",
               backgroundPosition: "center",
             }}
@@ -61,31 +82,63 @@ export default function DetailModal({ open, setOpen, image }) {
             sx={{
               width: { xs: "100%", md: "50%" },
               p: 3,
-              position: "relative",
               justifyContent: "space-between",
             }}
           >
-            {/* TOP CONTENT */}
+            {/* TOP */}
             <Stack spacing={2}>
-              {/* CLOSE */}
+
               <Stack direction="row" justifyContent="flex-end">
                 <IconButton onClick={handleClose}>
                   <CloseIcon />
                 </IconButton>
               </Stack>
 
-              {/* TITLE */}
               <Typography fontSize={22} fontWeight="bold">
-                Arabian Nuggets (With Fries)
+                {title}
               </Typography>
 
-              {/* PRICE */}
               <Typography fontSize={18} fontWeight="bold">
-                Rs. 699.00
+                Rs. {price}.00
               </Typography>
 
-              {/* ACCORDION STYLE BOXES */}
-              
+              {/* DESCRIPTION */}
+              {deatailData?.itemDescription && (
+                <Typography>{deatailData.itemDescription}</Typography>
+              )}
+
+              {/* COLD DRINK SECTION */}
+              {deatailData?.drinkOptions?.length > 0 && (
+                <Box
+                  sx={{
+                    bgcolor: "#f3f3f3",
+                    p: 2,
+                    borderRadius: 2,
+                  }}
+                >
+                  <FormControl>
+                    <FormLabel sx={{ fontWeight: "bold", color: "#000" }}>
+                      Cold Drink
+                    </FormLabel>
+
+                    <RadioGroup
+                      row
+                      value={selectedDrink}
+                      onChange={(e) => setSelectedDrink(e.target.value)}
+                    >
+                      {deatailData.drinkOptions.map((coldDrink, index) => (
+                        <FormControlLabel
+                          key={index}
+                          value={coldDrink}
+                          control={<Radio />}
+                          label={coldDrink}
+                        />
+                      ))}
+                    </RadioGroup>
+                  </FormControl>
+                </Box>
+              )}
+              {/* INSTRUCTIONS */}
               <Box
                 sx={{
                   bgcolor: "#f3f3f3",
@@ -93,35 +146,21 @@ export default function DetailModal({ open, setOpen, image }) {
                   borderRadius: 2,
                 }}
               >
-                <Typography fontWeight="bold">
-                  Instructions
-                </Typography>
+                <Typography fontWeight="bold">Instructions</Typography>
 
                 <TextField
                   fullWidth
                   placeholder="Any special requests?"
-                  sx={{
-                    mt: 2,
-                    bgcolor: "#fff",
-                    borderRadius: 2,
-                  }}
+                  sx={{ mt: 2, bgcolor: "#fff", borderRadius: 2 }}
                 />
               </Box>
             </Stack>
 
             {/* BOTTOM BAR */}
-            <Stack
-              direction="row"
-              spacing={2}
-              alignItems="center"
-              mt={3}
-            >
-              {/* QUANTITY */}
-              <Stack
-                direction="row"
-                alignItems="center"
-                spacing={1}
-              >
+            <Stack direction="row" spacing={2} alignItems="center" mt={3}>
+
+              {/* QTY */}
+              <Stack direction="row" alignItems="center" spacing={1}>
                 <Button
                   onClick={() => setQty(qty > 1 ? qty - 1 : 1)}
                   sx={{
@@ -150,6 +189,7 @@ export default function DetailModal({ open, setOpen, image }) {
               {/* ADD TO CART */}
               <Button
                 fullWidth
+                onClick={handleAddToCart}
                 sx={{
                   bgcolor: "#ff6b00",
                   color: "#fff",
@@ -158,7 +198,7 @@ export default function DetailModal({ open, setOpen, image }) {
                   fontWeight: "bold",
                 }}
               >
-                Rs. 699.00 Add To Cart
+                Rs. {total}.00 Add To Cart
               </Button>
             </Stack>
           </Stack>

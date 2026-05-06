@@ -17,6 +17,8 @@ import MyLocationIcon from "@mui/icons-material/MyLocation";
 import logo from "../../assets/Images/Bitey_burger_and_pizza_logo-removebg-preview.png";
 import axios from "axios";
 import Navbar from "../Layouts/Navbar";
+import { useDispatch } from "react-redux";
+import { action } from "../../Redux/Slice/OrdertypeSlice";
 
 export default function ModalLocation({ open, setOpen }) {
 
@@ -36,6 +38,10 @@ export default function ModalLocation({ open, setOpen }) {
   const [branch, setBranch] = React.useState("");
   const [location, setLocation] = React.useState();
   const [loadingLocation, setLoadingLocation] = React.useState(false);
+
+  const dispatch = useDispatch()
+
+  const { checkType } = action
 
   React.useEffect(() => {
     console.log(location);
@@ -86,6 +92,9 @@ export default function ModalLocation({ open, setOpen }) {
       address: address
     }
     localStorage.setItem("orderInfo", JSON.stringify(obj));
+    let db = localStorage.getItem("orderInfo")
+    let orderType = JSON.parse(db)
+    dispatch(checkType(orderType.type))
 
     handleClose();
   }
@@ -98,8 +107,15 @@ export default function ModalLocation({ open, setOpen }) {
       address: address
     }
     localStorage.setItem("orderInfo", JSON.stringify(obj));
+    let db = localStorage.getItem("orderInfo")
+    let orderType = JSON.parse(db)
+    dispatch(checkType(orderType.type))
     handleClose();
   }
+
+
+
+
 
   // const { house_number, suburb, road } = location;
 
@@ -238,7 +254,7 @@ export default function ModalLocation({ open, setOpen }) {
             </>
           ) : (
             <>
-             
+
               <TextField
                 fullWidth
                 value="Karachi"
@@ -263,7 +279,7 @@ export default function ModalLocation({ open, setOpen }) {
                     Select Branch
                   </MenuItem>
                   <MenuItem value="Yaseenabad, Plot no R 753, Block 9">Bitey - Yaseenabad, Plot no R 753, Block 9</MenuItem>
-                
+
                 </Select>
               </FormControl>
             </>

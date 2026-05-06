@@ -15,405 +15,171 @@ import BannerImage from "./ImageBox";
 import dealsImage from "../../assets/Images/1x/BROAST'.jpg";
 import DetailModal from "./DetailModal";
 import { useState } from "react";
+import axios from "axios";
+import { BaseUrl } from "../util";
 
 
 export default function Broast() {
-    const [open, setOpen] = useState(false);
+   
     const handleOpen = () => setOpen(true);
+    const [products, setProducts] = React.useState([]);
+
+    const [open, setOpen] = useState(false)
+    const [detailData, setDetailData] = useState([])
+
+    const openDetailPage = async (id) => {
+        setOpen(true)
+        console.log("detail Api fun Call");
+
+        try {
+            const res = await axios.get(`${BaseUrl}/broastItem/detail/${id}`)
+            console.log(res.data.data)
+            setDetailData(res.data.data)
+        }
+        catch (error) {
+            console.log(error); // full error console me
+
+            let message = "";
+
+            if (error.response) {
+                // server ne response diya (4xx, 5xx)
+                message = error.response.data?.message || error.response.statusText;
+            } else if (error.request) {
+                // request gayi lekin response nahi aaya
+                message = "No response from server";
+            } else {
+                // request setup error
+                message = error.message;
+            }
+
+            alert(message);
+        }
+
+    }
+
+
+    React.useEffect(() => {
+        getBroastItems()
+    }, [])
+
+    const getBroastItems = async () => {
+        try {
+            const getData = await axios.get(`${BaseUrl}/broastItem/get`)
+            console.log(getData.data.data);
+
+            setProducts(getData.data.data);
+        } catch (error) {
+            console.log(error);
+        }
+    }
 
     return (
         <Container>
-            <DetailModal open={open} setOpen={setOpen} image={"https://images.deliveryhero.io/image/fd-pk/LH/sq4w-listing.jpg"} />
+            <DetailModal open={open} setOpen={setOpen} deatailData={detailData} />
             <BannerImage image={dealsImage} />
 
 
             <Stack direction={"row"} flexWrap="wrap" gap={3} justifyContent="center" py={4}>
-                <Card
-                    sx={{
-                        display: "flex",
-                        p: 1.5,
-                        borderRadius: 3,
-                        maxWidth: 350,
-                        height: 180,
-                        width: "100%",
-                        boxShadow: "0 2px 10px rgba(0,0,0,0.08)",
-                        alignItems: "center",
-                    }}
-                >
-                    {/* Image */}
-                    <CardMedia
-                        component="img"
-                        image="https://images.deliveryhero.io/image/global-menu-service/FP_PK/vendor/c9dr/product/83751906/327db213-db6a-4fac-a269-1a61d797cfbf.jpg?width=%s"
-                        alt="food"
+                {products?.map((item, i) => {
+                    return <Card onClick={() => openDetailPage(item._id)}
                         sx={{
-                            width: { xs: 100, sm: 140 },
-                            height: { xs: 100, sm: 140 },
-                            borderRadius: 2,
-                        }}
-                    />
-
-                    {/* Content */}
-                    <CardContent
-                        sx={{
-                            flex: 1,
                             display: "flex",
-                            flexDirection: "column",
-                            p: "0 12px !important",
-                            height: '200px',
-                            justifyContent: "space-between",
-                            pt: "20px !important",
-                            pb: "20px !important"
+                            p: 1.5,
+                            borderRadius: 3,
+                            maxWidth: 350,
+                            height: 180,
+                            width: "100%",
+                            boxShadow: "0 2px 10px rgba(0,0,0,0.08)",
+                            alignItems: "center",
                         }}
                     >
-                        <Typography fontWeight={900} fontSize={18}>
-                            Zinger Burger
-                        </Typography>
+                        {/* Image */}
+                        <CardMedia
+                            component="img"
+                            image={item.image}
+                            alt="food"
+                            sx={{
+                                width: { xs: 100, sm: 140 },
+                                height: { xs: 100, sm: 140 },
+                                borderRadius: 2,
+                            }}
+                        />
 
-                        <Stack direction={"row"} justifyContent="space-between" alignItems={"center"}>
+                        {/* Content */}
+                        <CardContent
+                            sx={{
+                                flex: 1,
+                                display: "flex",
+                                flexDirection: "column",
+                                p: "0 12px !important",
+                                height: '200px',
+                                justifyContent: "space-between",
+                                pt: "20px !important",
+                                pb: "20px !important"
+                            }}
+                        >
+                            <Typography fontWeight={900} fontSize={18}>
+                                {item.title}
+                            </Typography>
 
-                            <Box>
-                                {/* Price */}
-                                <Box
-                                    sx={{
-                                        backgroundColor: "#e60000",
-                                        color: "#fff",
-                                        px: 1.5,
-                                        py: 0.5,
-                                        borderRadius: 2,
-                                        width: "fit-content",
-                                        fontWeight: 800,
-                                        fontSize: 12,
-                                        mb: 1,
-                                        fontFamily: "Roboto, sans-serif",
-                                    }}
-                                >
-                                    Rs. 370.00
-                                </Box>
+                            <Stack direction={"row"} justifyContent="space-between" alignItems={"center"}>
 
-                                {/* Actions */}
-                                <Box
-                                    sx={{
-                                        display: "flex",
-                                        alignItems: "center",
-                                        justifyContent: "space-between",
-                                    }}
-                                >
-                                    <Button
-                                        variant="contained"
+                                <Box>
+                                    {/* Price */}
+                                    <Box
                                         sx={{
-                                            backgroundColor: "#F3A32B",
+                                            backgroundColor: "#e60000",
+                                            color: "#fff",
+                                            px: 1.5,
+                                            py: 0.5,
                                             borderRadius: 2,
-                                            textTransform: "none",
+                                            width: "fit-content",
                                             fontWeight: 800,
-                                            px: 2,
-                                            "&:hover": {
-                                                backgroundColor: "#e60000",
-                                            },
-                                            fontSize: "13px",
-                                            
+                                            fontSize: 12,
+                                            mb: 1,
+                                            fontFamily: "Roboto, sans-serif",
                                         }}
                                     >
-                                        Add To Cart
-                                    </Button>
-                                </Box>
-                            </Box>
-                            <IconButton>
-                                <FavoriteBorderIcon />
-                            </IconButton>
+                                        Rs. {item.price}
+                                    </Box>
 
-                        </Stack>
-                    </CardContent>
-                </Card>
-
-                 <Card
-                    sx={{
-                        display: "flex",
-                        p: 1.5,
-                        borderRadius: 3,
-                        maxWidth: 350,
-                        height: 180,
-                        width: "100%",
-                        boxShadow: "0 2px 10px rgba(0,0,0,0.08)",
-                        alignItems: "center",
-                    }}
-                >
-                    {/* Image */}
-                    <CardMedia
-                        component="img"
-                        image="https://images.deliveryhero.io/image/global-menu-service/FP_PK/vendor/c9dr/product/83751906/327db213-db6a-4fac-a269-1a61d797cfbf.jpg?width=%s"
-                        alt="food"
-                        sx={{
-                            width: { xs: 100, sm: 140 },
-                            height: { xs: 100, sm: 140 },
-                            borderRadius: 2,
-                        }}
-                    />
-
-                    {/* Content */}
-                    <CardContent
-                        sx={{
-                            flex: 1,
-                            display: "flex",
-                            flexDirection: "column",
-                            p: "0 12px !important",
-                            height: '200px',
-                            justifyContent: "space-between",
-                            pt: "20px !important",
-                            pb: "20px !important"
-                        }}
-                    >
-                        <Typography fontWeight={900} fontSize={18}>
-                            Zinger Burger
-                        </Typography>
-
-                        <Stack direction={"row"} justifyContent="space-between" alignItems={"center"}>
-
-                            <Box>
-                                {/* Price */}
-                                <Box
-                                    sx={{
-                                        backgroundColor: "#e60000",
-                                        color: "#fff",
-                                        px: 1.5,
-                                        py: 0.5,
-                                        borderRadius: 2,
-                                        width: "fit-content",
-                                        fontWeight: 800,
-                                        fontSize: 12,
-                                        mb: 1,
-                                        fontFamily: "Roboto, sans-serif",
-                                    }}
-                                >
-                                    Rs. 370.00
-                                </Box>
-
-                                {/* Actions */}
-                                <Box
-                                    sx={{
-                                        display: "flex",
-                                        alignItems: "center",
-                                        justifyContent: "space-between",
-                                    }}
-                                >
-                                    <Button
-                                        variant="contained"
+                                    {/* Actions */}
+                                    <Box
                                         sx={{
-                                            backgroundColor: "#F3A32B",
-                                            borderRadius: 2,
-                                            textTransform: "none",
-                                            fontWeight: 800,
-                                            px: 2,
-                                            "&:hover": {
-                                                backgroundColor: "#e60000",
-                                            },
-                                            fontSize: "13px",
-                                            
+                                            display: "flex",
+                                            alignItems: "center",
+                                            justifyContent: "space-between",
                                         }}
                                     >
-                                        Add To Cart
-                                    </Button>
+                                        <Button
+                                            variant="contained"
+                                            sx={{
+                                                backgroundColor: "#F3A32B",
+                                                borderRadius: 2,
+                                                textTransform: "none",
+                                                fontWeight: 700,
+                                                px: 2,
+                                                "&:hover": {
+                                                    backgroundColor: "#e60000",
+                                                },
+                                                fontSize: "13px",
+
+                                            }}
+                                        >
+                                            View Details
+                                        </Button>
+                                    </Box>
                                 </Box>
-                            </Box>
-                            <IconButton>
-                                <FavoriteBorderIcon />
-                            </IconButton>
+                                <IconButton>
+                                    <FavoriteBorderIcon />
+                                </IconButton>
 
-                        </Stack>
-                    </CardContent>
-                </Card>
+                            </Stack>
+                        </CardContent>
+                    </Card>
+                })}
 
-                 <Card
-                    sx={{
-                        display: "flex",
-                        p: 1.5,
-                        borderRadius: 3,
-                        maxWidth: 350,
-                        height: 180,
-                        width: "100%",
-                        boxShadow: "0 2px 10px rgba(0,0,0,0.08)",
-                        alignItems: "center",
-                    }}
-                >
-                    {/* Image */}
-                    <CardMedia
-                        component="img"
-                        image="https://images.deliveryhero.io/image/global-menu-service/FP_PK/vendor/c9dr/product/83751906/327db213-db6a-4fac-a269-1a61d797cfbf.jpg?width=%s"
-                        alt="food"
-                        sx={{
-                            width: { xs: 100, sm: 140 },
-                            height: { xs: 100, sm: 140 },
-                            borderRadius: 2,
-                        }}
-                    />
 
-                    {/* Content */}
-                    <CardContent
-                        sx={{
-                            flex: 1,
-                            display: "flex",
-                            flexDirection: "column",
-                            p: "0 12px !important",
-                            height: '200px',
-                            justifyContent: "space-between",
-                            pt: "20px !important",
-                            pb: "20px !important"
-                        }}
-                    >
-                        <Typography fontWeight={900} fontSize={18}>
-                            Zinger Burger
-                        </Typography>
-
-                        <Stack direction={"row"} justifyContent="space-between" alignItems={"center"}>
-
-                            <Box>
-                                {/* Price */}
-                                <Box
-                                    sx={{
-                                        backgroundColor: "#e60000",
-                                        color: "#fff",
-                                        px: 1.5,
-                                        py: 0.5,
-                                        borderRadius: 2,
-                                        width: "fit-content",
-                                        fontWeight: 800,
-                                        fontSize: 12,
-                                        mb: 1,
-                                        fontFamily: "Roboto, sans-serif",
-                                    }}
-                                >
-                                    Rs. 370.00
-                                </Box>
-
-                                {/* Actions */}
-                                <Box
-                                    sx={{
-                                        display: "flex",
-                                        alignItems: "center",
-                                        justifyContent: "space-between",
-                                    }}
-                                >
-                                    <Button
-                                        variant="contained"
-                                        sx={{
-                                            backgroundColor: "#F3A32B",
-                                            borderRadius: 2,
-                                            textTransform: "none",
-                                            fontWeight: 800,
-                                            px: 2,
-                                            "&:hover": {
-                                                backgroundColor: "#e60000",
-                                            },
-                                            fontSize: "13px",
-                                            
-                                        }}
-                                    >
-                                        Add To Cart
-                                    </Button>
-                                </Box>
-                            </Box>
-                            <IconButton>
-                                <FavoriteBorderIcon />
-                            </IconButton>
-
-                        </Stack>
-                    </CardContent>
-                </Card>
-                 <Card
-                    sx={{
-                        display: "flex",
-                        p: 1.5,
-                        borderRadius: 3,
-                        maxWidth: 350,
-                        height: 180,
-                        width: "100%",
-                        boxShadow: "0 2px 10px rgba(0,0,0,0.08)",
-                        alignItems: "center",
-                    }}
-                >
-                    {/* Image */}
-                    <CardMedia
-                        component="img"
-                        image="https://images.deliveryhero.io/image/global-menu-service/FP_PK/vendor/c9dr/product/83751906/327db213-db6a-4fac-a269-1a61d797cfbf.jpg?width=%s"
-                        alt="food"
-                        sx={{
-                            width: { xs: 100, sm: 140 },
-                            height: { xs: 100, sm: 140 },
-                            borderRadius: 2,
-                        }}
-                    />
-
-                    {/* Content */}
-                    <CardContent
-                        sx={{
-                            flex: 1,
-                            display: "flex",
-                            flexDirection: "column",
-                            p: "0 12px !important",
-                            height: '200px',
-                            justifyContent: "space-between",
-                            pt: "20px !important",
-                            pb: "20px !important"
-                        }}
-                    >
-                        <Typography fontWeight={900} fontSize={18}>
-                            Zinger Burger
-                        </Typography>
-
-                        <Stack direction={"row"} justifyContent="space-between" alignItems={"center"}>
-
-                            <Box>
-                                {/* Price */}
-                                <Box
-                                    sx={{
-                                        backgroundColor: "#e60000",
-                                        color: "#fff",
-                                        px: 1.5,
-                                        py: 0.5,
-                                        borderRadius: 2,
-                                        width: "fit-content",
-                                        fontWeight: 800,
-                                        fontSize: 12,
-                                        mb: 1,
-                                        fontFamily: "Roboto, sans-serif",
-                                    }}
-                                >
-                                    Rs. 370.00
-                                </Box>
-
-                                {/* Actions */}
-                                <Box
-                                    sx={{
-                                        display: "flex",
-                                        alignItems: "center",
-                                        justifyContent: "space-between",
-                                    }}
-                                >
-                                    <Button
-                                        variant="contained"
-                                        sx={{
-                                            backgroundColor: "#F3A32B",
-                                            borderRadius: 2,
-                                            textTransform: "none",
-                                            fontWeight: 800,
-                                            px: 2,
-                                            "&:hover": {
-                                                backgroundColor: "#e60000",
-                                            },
-                                            fontSize: "13px",
-                                            
-                                        }}
-                                    >
-                                        Add To Cart
-                                    </Button>
-                                </Box>
-                            </Box>
-                            <IconButton>
-                                <FavoriteBorderIcon />
-                            </IconButton>
-
-                        </Stack>
-                    </CardContent>
-                </Card>
             </Stack>
         </Container >
     );

@@ -1,6 +1,8 @@
 import { Box, Stack, Typography } from "@mui/material";
 
-export default function FloatingCartBar({ count = 2, total = 1656 }) {
+export default function FloatingCartBar({ cart, setCart, count, total }) {
+  console.log(count);
+
   return (
     <Box
       sx={{
@@ -42,7 +44,7 @@ export default function FloatingCartBar({ count = 2, total = 1656 }) {
         </Box>
 
         {/* CENTER */}
-        <Typography fontWeight="bold" fontSize={16}>
+        <Typography sx={{cursor:"pointer"}} onClick={() => setCart(true)} fontWeight="900" fontSize={16}>
           View Cart
         </Typography>
 

@@ -25,10 +25,14 @@ import LocationOnIcon from "@mui/icons-material/LocationOn";
 import ShoppingBagIcon from "@mui/icons-material/ShoppingBag";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import CloseIcon from "@mui/icons-material/Close";
+import { Autocomplete } from "@mui/material";
 
 import logo from "../../assets/Images/Bitey_burger_and_pizza_logo-removebg-preview.png";
 import ModalLocation from "../Ui/ModalLocation";
 import Cart from "../Ui/Cart";
+import { useDispatch, useSelector } from "react-redux";
+import { action } from "../../Redux/Slice/OrdertypeSlice";
+import FloatingCartBar from "../Ui/FloatingCartBar";
 
 const Navbar = () => {
 
@@ -40,10 +44,28 @@ const Navbar = () => {
     const [openModal, setOpenModal] = useState(false);
     const [anchorEl, setAnchorEl] = useState(null);
     const [location, setLocation] = useState(false);
+    const [showFLot, setShowFlot] = useState(0)
+
+
+
+    const length = useSelector((data) => data.cart.items.length)
+    const total = useSelector((data) => data.cart.total)
+    console.log(length);
+
+    useEffect(() => {
+        setShowFlot(length)
+    }, [])
+
+
+
+
 
 
     let orderInfo = localStorage.getItem("orderInfo");
     let orderInfoParse = JSON.parse(orderInfo);
+
+
+
 
     useEffect(() => {
         try {
@@ -65,6 +87,7 @@ const Navbar = () => {
             top: y,
             behavior: "smooth",
         });
+        setSerach("")
     };
 
     const menuItems = [
@@ -81,12 +104,41 @@ const Navbar = () => {
         { menuName: "Extra", menuId: "extra" },
     ];
 
+    const [Serach, setSerach] = useState("")
+    const [filterSerach, setFilterSerach] = useState([])
+    const [check, setChecked] = useState(false)
+
+    const serachBox = () => {
+        if (Serach === "") {
+            setFilterSerach([]);
+            setChecked(false);
+            return;
+        }
+
+        let value = menuItems.filter(item =>
+            item.menuName.toLowerCase().includes(Serach.toLowerCase())
+        );
+
+        setFilterSerach(value);
+
+        setChecked(value.length === 0);
+    };
+
+    useEffect(() => {
+        serachBox()
+    }, [Serach])
+
+    console.log(filterSerach);
+
+
+
     return (
         <>
-            <Box   sx={{ position: "sticky", top: 0, zIndex: 1200 }}>
+
+            <Box sx={{ position: "sticky", top: 0, zIndex: 1200 }}>
 
                 {/* 🔶 TOP BAR */}
-                <Stack 
+                <Stack
                     direction="row"
                     alignItems="center"
                     justifyContent="space-between"
@@ -96,6 +148,7 @@ const Navbar = () => {
                         px: { xs: 2, sm: 3, md: 5 },
                     }}
                 >
+                    {length > 0 && <FloatingCartBar cart={cart} setCart={setCart}  count={length} total={total} />}
                     <Container
                         maxWidth="lg"
                         sx={{
@@ -139,17 +192,12 @@ const Navbar = () => {
                             {!isMobile && (
                                 <>
                                     <IconButton onClick={() => setCart(true)} sx={{ bgcolor: "#fff" }}>
-                                        <Badge badgeContent={1} color="error">
+                                        <Badge badgeContent={length} color="error">
                                             <ShoppingBagIcon />
                                         </Badge>
                                     </IconButton>
 
-                                    <Button
-                                        variant="outlined"
-                                        sx={{ color: "#fff", borderColor: "#fff" }}
-                                    >
-                                        Sign In / Register
-                                    </Button>
+
                                 </>
                             )}
 
@@ -178,7 +226,7 @@ const Navbar = () => {
                             </Button>
 
                             <IconButton onClick={() => setCart(true)}>
-                                <Badge badgeContent={1} color="error">
+                                <Badge badgeContent={length} color="error">
                                     <ShoppingBagIcon />
                                 </Badge>
                             </IconButton>
@@ -188,7 +236,7 @@ const Navbar = () => {
                 <Container />
 
                 {/* 🔴 APPBAR */}
-                <AppBar  position="static" sx={{  background: "#E53935", }} elevation={0}>
+                <AppBar position="static" sx={{ background: "#E53935", }} elevation={0}>
 
                     <Toolbar
                         sx={{
@@ -333,34 +381,118 @@ const Navbar = () => {
                         </Box>
 
 
-                        {/* 🔍 SEARCH BAR */}
-                        <Box
-                            sx={{
-                                flexGrow: { xs: 1, md: 0 },
-                                width: { xs: "100%", md: "300px" },
-                            }}
-                        >
-                            <TextField
-                                fullWidth
-                                variant="standard"
-                                placeholder="Search for food..."
-                                InputProps={{
-                                    startAdornment: (
-                                        <InputAdornment position="start">
-                                            <SearchIcon sx={{ color: "#fff" }} />
-                                        </InputAdornment>
-                                    ),
+                        <Box sx={{ width: { xs: "100%", md: "300px" } }}>
+                            <div
+                                style={{
+                                    width: "100%",
+                                    position: "relative",
+                                    fontFamily: "Arial",
                                 }}
-                                sx={{
-                                    "& input": { color: "#fff" },
-                                    "& .MuiInput-underline:before": {
-                                        borderBottomColor: "#fff",
-                                    },
-                                    "& .MuiInput-underline:after": {
-                                        borderBottomColor: "#fff",
-                                    },
-                                }}
-                            />
+                            >
+
+                                {/* INPUT */}
+                                <div style={{ position: "relative" }}>
+                                    <SearchIcon
+                                        style={{
+                                            position: "absolute",
+                                            left: "10px",
+                                            top: "50%",
+                                            transform: "translateY(-50%)",
+                                            color: "#000",
+                                            opacity: 0.6,
+                                        }}
+                                    />
+
+                                    <input
+                                        type="text"
+                                        placeholder="Search food..."
+                                        value={Serach}
+                                        onChange={(e) => setSerach(e.target.value)}
+                                        style={{
+                                            width: "100%",
+                                            padding: "10px 10px 10px 35px",
+                                            borderRadius: "8px",
+                                            border: "2px solid #000",
+                                            outline: "none",
+                                            background: "#fff",
+                                            color: "#000",
+                                            fontSize: "14px",
+                                            fontWeight: "500",
+                                            transition: "0.2s ease",
+                                        }}
+                                    />
+                                </div>
+
+                                {/* DROPDOWN */}
+                                {check && Serach ? (
+                                    <div
+                                        style={{
+                                            position: "absolute",
+                                            width: "100%",
+                                            background: "#fff",
+                                            border: "2px solid #000",
+                                            borderTop: "none",
+                                            borderRadius: "0 0 8px 8px",
+                                            zIndex: 999,
+                                        }}
+                                    >
+                                        <div
+                                            style={{
+                                                padding: "10px",
+                                                color: "#000",
+                                                textAlign: "center",
+                                                fontWeight: "600",
+                                            }}
+                                        >
+                                            Item not found
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <>
+                                        {Serach && (
+                                            <div
+                                                style={{
+                                                    position: "absolute",
+                                                    width: "100%",
+                                                    background: "#fff",
+                                                    border: "2px solid #000",
+                                                    borderTop: "none",
+                                                    borderRadius: "0 0 8px 8px",
+                                                    zIndex: 999,
+                                                    maxHeight: "200px",
+                                                    overflowY: "auto",
+                                                }}
+                                            >
+                                                {filterSerach.map((item, index) => (
+                                                    <div
+                                                        key={index}
+                                                        onClick={() => {
+                                                            setSerach(item.menuName);
+                                                            handleScroll(item.menuId);
+                                                        }}
+                                                        style={{
+                                                            padding: "10px",
+                                                            cursor: "pointer",
+                                                            color: "#000",
+                                                            fontSize: "14px",
+                                                            fontWeight: "500",
+                                                            borderBottom: "1px solid #eee",
+                                                        }}
+                                                        onMouseEnter={(e) =>
+                                                            (e.currentTarget.style.background = "#000")
+                                                        }
+                                                        onMouseLeave={(e) =>
+                                                            (e.currentTarget.style.background = "#fff")
+                                                        }
+                                                    >
+                                                        {item.menuName}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </>
+                                )}
+                            </div>
                         </Box>
                     </Toolbar>
 

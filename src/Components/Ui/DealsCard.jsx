@@ -16,10 +16,45 @@ import dealsImage from "../../assets/Images/1x/imagedeals.png";
 import { useEffect } from "react";
 import { BaseUrl } from "../util";
 import axios from "axios";
+import DetailModal from "./DetailModal";
+import { useState } from "react";
 
 export default function DealCards() {
 
     const [products, setProducts] = React.useState([]);
+    const [open, setOpen] = useState(false)
+    const [detailData, setDetailData] = useState([])
+
+    const openDetailPage = async (id) => {
+        setOpen(true)
+        console.log("detail Api fun Call");
+
+        try {
+            const res = await axios.get(`${BaseUrl}/dealItem/detail/${id}`)
+            console.log(res.data.data)
+            setDetailData(res.data.data)
+        }
+        catch (error) {
+            console.log(error); // full error console me
+
+            let message = "";
+
+            if (error.response) {
+                // server ne response diya (4xx, 5xx)
+                message = error.response.data?.message || error.response.statusText;
+            } else if (error.request) {
+                // request gayi lekin response nahi aaya
+                message = "No response from server";
+            } else {
+                // request setup error
+                message = error.message;
+            }
+
+            alert(message);
+        }
+
+    }
+
 
     useEffect(() => {
         getDealItems()
@@ -40,11 +75,12 @@ export default function DealCards() {
         <Container>
 
             <BannerImage image={dealsImage} />
+            <DetailModal open={open} setOpen={setOpen} deatailData={detailData} />
 
 
             <Stack direction={"row"} flexWrap="wrap" gap={3} justifyContent="center" py={4}>
                 {products?.map((item, i) => {
-                    return <Card
+                return <Card onClick={() => openDetailPage(item._id)}
                         sx={{
                             display: "flex",
                             p: 1.5,
@@ -124,7 +160,7 @@ export default function DealCards() {
                                         },
                                     }}
                                 >
-                                    Add To Cart
+                                    View Details
                                 </Button>
 
                                 <IconButton>

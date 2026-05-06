@@ -10,56 +10,51 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import { useDispatch, useSelector } from "react-redux";
+import { action } from "../../Redux/Slice/cart";
+import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
+import axios from "axios";
+import { BaseUrl } from "../util";
+
 
 export default function Cart({ open, setOpen }) {
   const handleClose = () => setOpen(false);
+  const [cart, setCart] = React.useState([]);
+  const [qty, setQty] = React.useState(0)
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
 
-  const [cart, setCart] = React.useState([
-    {
-      id: 1,
-      name: "Quarter Chest Broast",
-      desc: "1 Chest, 1 Wing, 1 Bun, 1 Garlic Sauce, Fries",
-      price: 749,
-      qty: 1,
-      img: "https://images.unsplash.com/photo-1604908176997-4315d2e9a3c6",
-    },
-    {
-      id: 2,
-      name: "Full Broast",
-      desc:
-        "2 Legs, 2 Thighs, 2 Chests, 2 Wings, 4 Buns, 4 Garlic Sauces, Fries",
-      price: 2599,
-      qty: 1,
-      img: "https://images.unsplash.com/photo-1562967916-eb82221dfb92",
-    },
-  ]);
 
-  const updateQty = (id, type) => {
-    setCart((prev) =>
-      prev.map((item) =>
-        item.id === id
-          ? {
-              ...item,
-              qty:
-                type === "inc"
-                  ? item.qty + 1
-                  : Math.max(1, item.qty - 1),
-            }
-          : item
-      )
-    );
-  };
+  const [extar, setExtar] = React.useState([])
 
-  const removeItem = (id) => {
-    setCart((prev) => prev.filter((item) => item.id !== id));
-  };
 
-  const clearCart = () => setCart([]);
 
-  const subtotal = cart.reduce(
-    (acc, item) => acc + item.price * item.qty,
-    0
-  );
+  const { itemQtyInc, itemQtyDc, addItem , removeItem, ClearCart} = action
+
+  const cartSelector = useSelector((cartItem) => cartItem.cart.items)
+  const total = useSelector((cartTotal) => cartTotal.cart.total)
+
+
+  useEffect(() => {
+    getPopularItems();
+  }, []);
+
+  const getPopularItems = async () => {
+    try {
+      const getData = await axios.get(`${BaseUrl}/extraItem/get`)
+      console.log(getData.data.data);
+
+      setExtar(getData.data.data);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  const addExtraItem = (data) => {
+    let extraItemData = { ...data, qty: 1 }
+    dispatch(addItem(extraItemData))
+  }
 
   return (
     <Drawer
@@ -88,18 +83,18 @@ export default function Cart({ open, setOpen }) {
 
             <Stack direction="row" alignItems="center" spacing={1}>
               <Typography
-                onClick={clearCart}
                 sx={{
                   color: "#ff3d00",
                   cursor: "pointer",
                   fontWeight: 500,
                 }}
+                onClick={() => dispatch(ClearCart())}
               >
                 Clear cart
               </Typography>
 
               <IconButton onClick={handleClose}>
-                <CloseIcon  sx={{color :"black" , fontWeight:900}}/>
+                <CloseIcon sx={{ color: "black", fontWeight: 900 }} />
               </IconButton>
             </Stack>
           </Stack>
@@ -108,7 +103,7 @@ export default function Cart({ open, setOpen }) {
 
           {/* ITEMS */}
           <Stack spacing={2} p={2}>
-            {cart.map((item) => (
+            {cartSelector.map((item) => (
               <Stack key={item.id} spacing={1.5}>
                 <Stack direction="row" spacing={2}>
                   <Box
@@ -116,7 +111,7 @@ export default function Cart({ open, setOpen }) {
                       width: 65,
                       height: 65,
                       borderRadius: 2,
-                      backgroundImage: `url(${item.img})`,
+                      backgroundImage: `url(${item.image})`,
                       backgroundSize: "cover",
                       backgroundPosition: "center",
                     }}
@@ -124,7 +119,7 @@ export default function Cart({ open, setOpen }) {
 
                   <Stack flex={1} spacing={0.5}>
                     <Typography fontWeight="bold" fontSize={15}>
-                      {item.name}
+                      {item.title}
                     </Typography>
 
                     <Typography fontSize={12} color="#777">
@@ -136,7 +131,7 @@ export default function Cart({ open, setOpen }) {
                     </Typography>
                   </Stack>
 
-                  <IconButton onClick={() => removeItem(item.id)}>
+                  <IconButton onClick={() => dispatch(removeItem(item._id))}>
                     <DeleteOutlineIcon />
                   </IconButton>
                 </Stack>
@@ -144,7 +139,7 @@ export default function Cart({ open, setOpen }) {
                 {/* QTY */}
                 <Stack direction="row" alignItems="center" spacing={1}>
                   <Button
-                    onClick={() => updateQty(item.id, "dec")}
+                    onClick={() => dispatch(itemQtyDc(item._id))}
                     sx={{
                       minWidth: 32,
                       height: 32,
@@ -166,11 +161,11 @@ export default function Cart({ open, setOpen }) {
                       textAlign: "center",
                     }}
                   >
-                    {item.qty}
+                    {qty ? qty : item.qty}
                   </Box>
 
                   <Button
-                    onClick={() => updateQty(item.id, "inc")}
+                    onClick={() => dispatch(itemQtyInc(item._id))}
                     sx={{
                       minWidth: 32,
                       height: 32,
@@ -203,40 +198,61 @@ export default function Cart({ open, setOpen }) {
                 }}
               >
                 <Stack direction="row" spacing={2} alignItems="center">
-                  <Box
-                    sx={{
-                      width: 60,
-                      height: 60,
-                      borderRadius: 2,
-                      backgroundImage:
-                        "url('https://images.unsplash.com/photo-1604908176997-4315d2e9a3c6')",
-                      backgroundSize: "cover",
-                    }}
-                  />
+                  {extar?.map((item) => {
+                    return <>
+                      <Box
+                        sx={{
+                          width: 60,
+                          height: 60,
+                          borderRadius: 2,
+                          backgroundImage:
+                            `url("${item.image}")`,
+                          backgroundSize: "cover",
+                        }}
+                      />
 
-                  <Stack flex={1}>
-                    <Typography fontWeight="bold">
-                      Peri Peri Dip
-                    </Typography>
-                    <Typography fontSize={12} color="#777">
-                      A bold, tangy sauce with a spicy kick
-                    </Typography>
+                      <Stack flex={1}>
+                        <Typography fontWeight="bold">
+                          {item.title}
+                        </Typography>
 
-                    <Box
-                      sx={{
-                        mt: 1,
-                        bgcolor: "#ff6b00",
-                        color: "#fff",
-                        px: 1.5,
-                        py: 0.5,
-                        borderRadius: 2,
-                        fontSize: 12,
-                        width: "fit-content",
-                      }}
-                    >
-                      Rs. 100.00
-                    </Box>
-                  </Stack>
+
+                        <Box
+                          sx={{
+                            mt: 1,
+                            bgcolor: "#ff6b00",
+                            color: "#fff",
+                            px: 1.5,
+                            py: 0.5,
+                            borderRadius: 2,
+                            fontSize: 12,
+                            width: "fit-content",
+                          }}
+                        >
+                          Rs. {item.price}.00
+                        </Box>
+                        <Box
+                          onClick={() => addExtraItem(item)}
+                          sx={{
+                            mt: 1,
+                            bgcolor: "#ff0000",
+                            color: "#fff",
+                            px: 1.5,
+                            py: 0.5,
+                            borderRadius: 2,
+                            fontSize: 14,
+                            width: "fit-content",
+                            fontWeight: 900,
+                            cursor: "pointer"
+                          }}
+
+                        >
+                          Add +
+                        </Box>
+                      </Stack>
+                    </>
+                  })}
+
                 </Stack>
               </Box>
             </Stack>
@@ -249,14 +265,14 @@ export default function Cart({ open, setOpen }) {
             <Stack direction="row" justifyContent="space-between">
               <Typography color="#777">Subtotal</Typography>
               <Typography color="#777">
-                Rs. {subtotal.toLocaleString()}.00
+                Rs.{total}.00
               </Typography>
             </Stack>
 
             <Stack direction="row" justifyContent="space-between">
               <Typography fontWeight="bold">Grand total</Typography>
               <Typography fontWeight="bold">
-                Rs. {subtotal.toLocaleString()}.00
+                Rs.{total}.00
               </Typography>
             </Stack>
 
@@ -265,6 +281,7 @@ export default function Cart({ open, setOpen }) {
             </Typography>
 
             <Button
+              onClick={() => navigate('/checkout')}
               fullWidth
               sx={{
                 bgcolor: "#ff6b00",
