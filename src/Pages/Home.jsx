@@ -1,6 +1,6 @@
 import MainLayout from '../Components/Layouts/MainLayout'
 import PopularItems from '../Components/Layouts/PopularItems'
-import Bbq from '../Components/Ui/BBQ.JSX'
+import Bbq from '../Components/Ui/Bbq'
 import Broast from '../Components/Ui/Broast'
 import BurgersCard from '../Components/Ui/BurgersCard'
 import DealCards from '../Components/Ui/DealsCard'
