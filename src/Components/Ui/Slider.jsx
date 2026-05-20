@@ -75,15 +75,15 @@ const Slider = () => {
                 loop={true}
             >
                 <SwiperSlide>
-                    <img src={flavorAttack} style={{ width: "100%" , height:isMobile ? '200px' : '500px'}}/>
+                    <img src={"https://res.cloudinary.com/djcb9ze2z/image/upload/v1779284021/image_babb_lslugo.png"} style={{ width: "100%" , height:isMobile ? '200px' : '500px'}}/>
                 </SwiperSlide>
 
                 <SwiperSlide>
-                    <img src={imageBurgur} style={{ width: "100%" , height:isMobile ? '200px' : '500px'}} />
+                    <img src={"https://res.cloudinary.com/djcb9ze2z/image/upload/v1779284022/iii_kxxeiz.png"} style={{ width: "100%" , height:isMobile ? '200px' : '500px'}} />
                 </SwiperSlide>
 
                 <SwiperSlide>
-                    <img src={imageNagets} style={{ width: "100%" , height:isMobile ? '200px' : '500px'}} />
+                    <img src={"https://res.cloudinary.com/djcb9ze2z/image/upload/v1779299018/3nd-image-100_m01c9n.jpg"} style={{ width: "100%" , height:isMobile ? '200px' : '500px'}} />
                 </SwiperSlide>
             </Swiper>
         </Box>
