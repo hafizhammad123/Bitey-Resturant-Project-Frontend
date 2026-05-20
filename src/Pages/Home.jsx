@@ -12,7 +12,7 @@ import PizzaSandwich from '../Components/Ui/PizzaSandwich'
 import Roll from '../Components/Ui/Roll'
 import SandWich from '../Components/Ui/Sandwich'
 import Slider from '../Components/Ui/Slider'
-import Bbq from '../Components/Ui/Bbq.jsx'
+import Bbq from "../Components/Ui/Bbq.jsx";
 
 const Home = () => {
   return (
