@@ -84,7 +84,7 @@ export default function Cart({ open, setOpen }) {
             <Stack direction="row" alignItems="center" spacing={1}>
               <Typography
                 sx={{
-                  color: "#ff3d00",
+                  color: "#f3a32b",
                   cursor: "pointer",
                   fontWeight: 500,
                 }}
@@ -143,7 +143,7 @@ export default function Cart({ open, setOpen }) {
                     sx={{
                       minWidth: 32,
                       height: 32,
-                      bgcolor: "#ff6b00",
+                      bgcolor: "#f3a32b",
                       color: "#fff",
                       borderRadius: "50%",
                     }}
@@ -169,7 +169,7 @@ export default function Cart({ open, setOpen }) {
                     sx={{
                       minWidth: 32,
                       height: 32,
-                      bgcolor: "#ff6b00",
+                      bgcolor: "#f3a32b",
                       color: "#fff",
                       borderRadius: "50%",
                     }}
@@ -220,7 +220,7 @@ export default function Cart({ open, setOpen }) {
                         <Box
                           sx={{
                             mt: 1,
-                            bgcolor: "#ff6b00",
+                            bgcolor: "#f3a32b",
                             color: "#fff",
                             px: 1.5,
                             py: 0.5,
@@ -235,7 +235,7 @@ export default function Cart({ open, setOpen }) {
                           onClick={() => addExtraItem(item)}
                           sx={{
                             mt: 1,
-                            bgcolor: "#ff0000",
+                            bgcolor: "#f3a32b",
                             color: "#fff",
                             px: 1.5,
                             py: 0.5,
@@ -284,7 +284,7 @@ export default function Cart({ open, setOpen }) {
               onClick={() => navigate('/checkout')}
               fullWidth
               sx={{
-                bgcolor: "#ff6b00",
+                bgcolor: "#f3a32b",
                 color: "#fff",
                 mt: 1,
                 py: 1.5,

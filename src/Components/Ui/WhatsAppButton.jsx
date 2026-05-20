@@ -3,7 +3,7 @@ import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 import NavigationIcon from '@mui/icons-material/Navigation';
 
 export default function WhatsAppButton({
-  phone = "923001234567", // apna number yahan daalo (without +)
+  phone = "923188201074", // apna number yahan daalo (without +)
   message = "Hello, I want to order",
 }) {
   const handleClick = () => {
@@ -33,7 +33,7 @@ export default function WhatsAppButton({
       <Box
         sx={{
           position: "fixed",
-          bottom: isMobile ? 86 : 16,
+          bottom: isMobile ? 206 : 16,
           right: 16,
           zIndex: 1300,
         }}
@@ -58,7 +58,7 @@ export default function WhatsAppButton({
       <Box
         sx={{
           position: "fixed",
-          bottom: isMobile ? 130 : 85,
+          bottom: isMobile ? 160 : 85,
           right: 16,
           zIndex: 1300,
         }}

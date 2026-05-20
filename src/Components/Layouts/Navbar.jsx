@@ -15,8 +15,9 @@ import {
     MenuItem,
 } from "@mui/material";
 
+import { useLocation } from "react-router-dom";
 import { AppBar, Toolbar } from "@mui/material";
-
+import { InputBase } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import SearchIcon from "@mui/icons-material/Search";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
@@ -32,12 +33,18 @@ import ModalLocation from "../Ui/ModalLocation";
 import Cart from "../Ui/Cart";
 import { useDispatch, useSelector } from "react-redux";
 import { action } from "../../Redux/Slice/OrdertypeSlice";
+import { Navigate, useNavigate } from "react-router-dom";
 import FloatingCartBar from "../Ui/FloatingCartBar";
+import { noConflict } from "leaflet";
+import ListAltRoundedIcon from '@mui/icons-material/ListAltRounded';
+
 
 const Navbar = () => {
 
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+    const navigate = useNavigate()
+    const locationReact = useLocation();
 
     const [open, setOpen] = useState(false);
     const [cart, setCart] = useState(false);
@@ -55,9 +62,6 @@ const Navbar = () => {
     useEffect(() => {
         setShowFlot(length)
     }, [])
-
-
-
 
 
 
@@ -148,7 +152,14 @@ const Navbar = () => {
                         px: { xs: 2, sm: 3, md: 5 },
                     }}
                 >
-                    {length > 0 && <FloatingCartBar cart={cart} setCart={setCart}  count={length} total={total} />}
+                    {length > 0 && locationReact.pathname !== "/checkout" && (
+                        <FloatingCartBar
+                            cart={cart}
+                            setCart={setCart}
+                            count={length}
+                            total={total}
+                        />
+                    )}
                     <Container
                         maxWidth="lg"
                         sx={{
@@ -163,18 +174,18 @@ const Navbar = () => {
                             <img
                                 src={logo}
                                 alt="logo"
-                                style={isMobile ? { width: 60 } : { width: 140 }}
+                                style={isMobile ? { width: 70 } : { width: 140 }}
                             />
 
-                            <Stack direction="row" alignItems="center" spacing={1}>
-                                <LocationOnIcon />
+                            <Stack direction="row" alignItems="center" spacing={1} justifyContent={isMobile && "center"} sx={{cursor:"pointer"}} onClick={() => setOpenModal(true)}>
+                                <LocationOnIcon  sx={{fontSize:'16px'}}/>
 
                                 <Stack
                                     sx={{ cursor: "pointer" }}
                                     onClick={() => setOpenModal(true)}
                                 >
                                     <Stack direction="row" alignItems="center">
-                                        <Typography fontWeight="bold">
+                                        <Typography fontWeight="bold"  sx={{fontSize: isMobile && "11px"}}>
                                             {`${orderInfoParse?.type}`} from
                                         </Typography>
                                         <KeyboardArrowDownIcon />
@@ -201,6 +212,14 @@ const Navbar = () => {
                                 </>
                             )}
 
+                            {localStorage.getItem("orderId") && <>
+
+                                <Typography onClick={() => navigate('/order')} fontSize={14} fontWeight="bold" color="#fff">
+                                   <ListAltRoundedIcon sx={{position:'relative', left:isMobile && "16px", top:"4px" ,fontSize:isMobile ?18 : 30 }} />
+                                </Typography>
+
+                            </>}
+
                             {isMobile && (
                                 <IconButton onClick={() => setOpen(true)} sx={{ color: "#fff" }}>
                                     <MenuIcon />
@@ -221,9 +240,7 @@ const Navbar = () => {
                                 </IconButton>
                             </Stack>
 
-                            <Button variant="outlined" sx={{ color: "#fff", borderColor: "#fff" }}>
-                                Sign In / Register
-                            </Button>
+                          
 
                             <IconButton onClick={() => setCart(true)}>
                                 <Badge badgeContent={length} color="error">
@@ -236,220 +253,467 @@ const Navbar = () => {
                 <Container />
 
                 {/* 🔴 APPBAR */}
-                <AppBar position="static" sx={{ background: "#E53935", }} elevation={0}>
+                {locationReact.pathname == "/checkout" ? <>
 
-                    <Toolbar
-                        sx={{
-                            display: "flex",
-                            justifyContent: "space-between",
-                            alignItems: "center",
-                            gap: 2,
-                            flexWrap: "wrap", // 🔥 responsive
-                        }}
-                    >
-                        {/* LEFT MENU */}
-                        <Box sx={{ display: "flex", flexWrap: "wrap", gap: isMobile ? 0 : 2 }}>
-                            {isMobile ?
+                    <AppBar position="static" sx={{ background: "#E53935", display: "none" }} elevation={0}>
 
-                                <Stack direction="row" alignItems="center" justifyContent={"center"} spacing={0} mt={"10px"} p={0}>
-                                    <Button
-                                        sx={{ color: "#fff", fontSize: isMobile && 10, fontWeight: 700 }}
-                                        onClick={() => handleScroll("burger")}
-                                    >
-                                        Burgers
-                                    </Button>
+                        <Toolbar
+                            sx={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                                alignItems: "center",
+                                gap: 2,
+                                flexWrap: "wrap", // 🔥 responsive
+                            }}
+                        >
+                            {/* LEFT MENU */}
+                            <Box sx={{ display: "flex", flexWrap: "wrap", gap: isMobile ? 0 : 2 }}>
+                                {isMobile ?
 
-                                    <Button
-                                        sx={{ color: "#fff", fontSize: isMobile && 10, fontWeight: 700 }}
-                                        onClick={() => handleScroll("broast")}
-                                    >
-                                        Broast
-                                    </Button>
-
-                                    <Button
-                                        sx={{ color: "#fff", fontSize: isMobile && 10, fontWeight: 700 }}
-                                        onClick={() => handleScroll("bbq")}
-                                    >
-                                        B.B.Q
-                                    </Button>
-
-                                    <Box
-                                        onMouseEnter={(e) => setAnchorEl(e.currentTarget)}
-                                        onMouseLeave={() => setAnchorEl(null)}
-                                    >
-                                        <Button sx={{ color: "#fff", fontSize: isMobile && 10, fontWeight: 700 }}>
-                                            More Menu <ArrowDropDownIcon />
+                                    <Stack direction="row" alignItems="center" justifyContent={"center"} spacing={0} mt={"10px"} p={0}>
+                                        <Button
+                                            sx={{ color: "#fff", fontSize: isMobile && 10, fontWeight: 700 }}
+                                            onClick={() => handleScroll("burger")}
+                                        >
+                                            Burgers
                                         </Button>
 
-                                        <Menu
-                                            anchorEl={anchorEl}
-                                            open={Boolean(anchorEl)}
-                                            onClose={() => setAnchorEl(null)}
-                                            PaperProps={{
-                                                sx: {
-                                                    backgroundColor: "#f3a32b", // 🔥 yahan color set
-                                                    color: "#fff",
-                                                    borderRadius: "10px",
-                                                    mt: 1,
-                                                },
-                                            }}
+                                        <Button
+                                            sx={{ color: "#fff", fontSize: isMobile && 10, fontWeight: 700 }}
+                                            onClick={() => handleScroll("broast")}
                                         >
-                                            {menuItems.map((item, i) => (
-                                                <MenuItem
-                                                    key={item.menuId}
-                                                    onClick={() => {
-                                                        handleScroll(item.menuId);
-                                                        setAnchorEl(null);
-                                                    }}   // ✅ scroll
-                                                    sx={{
-                                                        "&:hover": {
-                                                            backgroundColor: "rgba(0,0,0,0.1)",
-                                                        },
-                                                    }}
-                                                >
-                                                    {item.menuName}   {/* ✅ name show */}
-                                                </MenuItem>
-                                            ))}
-
-                                        </Menu>
-                                    </Box>
-                                </Stack>
-                                :
-                                <>
-                                    <Button onClick={() => {
-                                        handleScroll("burger");
-                                    }} sx={{ color: "#fff", fontSize: isMobile && 11, fontWeight: 800 }}>Burgers</Button>
-                                    <Button sx={{ color: "#fff", fontSize: isMobile && 11, fontWeight: 800 }} onClick={() => handleScroll("broast")}>Broast</Button>
-
-                                    <Button sx={{ color: "#fff", fontSize: isMobile && 11, fontWeight: 800 }} onClick={() => handleScroll("sandwich")}>Sandwich</Button>
-
-                                    <Button sx={{ color: "#fff", fontSize: isMobile && 11, fontWeight: 800 }} onClick={() => handleScroll("pizza")}>Pizza</Button>
-
-                                    <Button sx={{ color: "#fff", fontSize: isMobile && 11, fontWeight: 800 }} onClick={() => handleScroll("pasta")}>Pasta</Button>
-
-                                    <Button sx={{ color: "#fff", fontSize: isMobile && 11, fontWeight: 800 }} onClick={() => handleScroll("bbq")}>Bbq</Button>
-
-                                    <Button sx={{ color: "#fff", fontSize: isMobile && 11, fontWeight: 800 }} onClick={() => handleScroll("roll")}>Roll</Button>
-
-                                    <Button sx={{ color: "#fff", fontSize: isMobile && 11, fontWeight: 800 }} onClick={() => handleScroll("lasagna")}>Lasagna</Button>
-
-                                    <Button sx={{ color: "#fff", fontSize: isMobile && 11, fontWeight: 800 }} onClick={() => handleScroll("extra")}>Extra</Button>
-                                    <Box
-                                        onMouseEnter={(e) => setAnchorEl(e.currentTarget)}
-                                        onMouseLeave={() => setAnchorEl(null)}
-                                    >
-                                        <Button sx={{ color: "#ffa96b", fontSize: isMobile && 10, fontWeight: 800 }}>
-                                            More Menu <ArrowDropDownIcon />
+                                            Broast
                                         </Button>
 
-                                        <Menu
-                                            anchorEl={anchorEl}
-                                            open={Boolean(anchorEl)}
-                                            onClose={() => setAnchorEl(null)}
-                                            PaperProps={{
-                                                sx: {
-                                                    backgroundColor: "#f3a32b", // 🔥 yahan color set
-                                                    color: "#fff",
-                                                    borderRadius: "10px",
-                                                    mt: 1,
-                                                },
-                                            }}
+                                        <Button
+                                            sx={{ color: "#fff", fontSize: isMobile && 10, fontWeight: 700 }}
+                                            onClick={() => handleScroll("bbq")}
                                         >
-                                            {menuItems.map((item, i) => (
-                                                <MenuItem
-                                                    key={item.menuId}
-                                                    onClick={() => {
-                                                        handleScroll(item.menuId);
-                                                        setAnchorEl(null);
-                                                    }}
+                                            B.B.Q
+                                        </Button>
 
-                                                    sx={{
-                                                        "&:hover": {
-                                                            backgroundColor: "rgba(0,0,0,0.1)",
-                                                        },
-                                                    }}
-                                                >
-                                                    {item.menuName}   {/* ✅ name show */}
-                                                </MenuItem>
-                                            ))}
-                                        </Menu>
-                                    </Box>
+                                        <Box
+                                            onMouseEnter={(e) => setAnchorEl(e.currentTarget)}
+                                            onMouseLeave={() => setAnchorEl(null)}
+                                        >
+                                            <Button sx={{ color: "#fff", fontSize: isMobile && 10, fontWeight: 700 }}>
+                                                More Menu <ArrowDropDownIcon />
+                                            </Button>
 
-                                </>
-                            }
+                                            <Menu
+                                                anchorEl={anchorEl}
+                                                open={Boolean(anchorEl)}
+                                                onClose={() => setAnchorEl(null)}
+                                                PaperProps={{
+                                                    sx: {
+                                                        backgroundColor: "#f3a32b", // 🔥 yahan color set
+                                                        color: "#fff",
+                                                        borderRadius: "10px",
+                                                        mt: 1,
+                                                    },
+                                                }}
+                                            >
+                                                {menuItems.map((item, i) => (
+                                                    <MenuItem
+                                                        key={item.menuId}
+                                                        onClick={() => {
+                                                            handleScroll(item.menuId);
+                                                            setAnchorEl(null);
+                                                        }}   // ✅ scroll
+                                                        sx={{
+                                                            "&:hover": {
+                                                                backgroundColor: "rgba(0,0,0,0.1)",
+                                                            },
+                                                        }}
+                                                    >
+                                                        {item.menuName}   {/* ✅ name show */}
+                                                    </MenuItem>
+                                                ))}
 
-                        </Box>
+                                            </Menu>
+                                        </Box>
+                                    </Stack>
+                                    :
+                                    <>
+                                        <Button onClick={() => {
+                                            handleScroll("burger");
+                                        }} sx={{ color: "#fff", fontSize: isMobile && 11, fontWeight: 800 }}>Burgers</Button>
+                                        <Button sx={{ color: "#fff", fontSize: isMobile && 11, fontWeight: 800 }} onClick={() => handleScroll("broast")}>Broast</Button>
+
+                                        <Button sx={{ color: "#fff", fontSize: isMobile && 11, fontWeight: 800 }} onClick={() => handleScroll("sandwich")}>Sandwich</Button>
+
+                                        <Button sx={{ color: "#fff", fontSize: isMobile && 11, fontWeight: 800 }} onClick={() => handleScroll("pizza")}>Pizza</Button>
+
+                                        <Button sx={{ color: "#fff", fontSize: isMobile && 11, fontWeight: 800 }} onClick={() => handleScroll("pasta")}>Pasta</Button>
+
+                                        <Button sx={{ color: "#fff", fontSize: isMobile && 11, fontWeight: 800 }} onClick={() => handleScroll("bbq")}>Bbq</Button>
+
+                                        <Button sx={{ color: "#fff", fontSize: isMobile && 11, fontWeight: 800 }} onClick={() => handleScroll("roll")}>Roll</Button>
+
+                                        <Button sx={{ color: "#fff", fontSize: isMobile && 11, fontWeight: 800 }} onClick={() => handleScroll("lasagna")}>Lasagna</Button>
+
+                                        <Button sx={{ color: "#fff", fontSize: isMobile && 11, fontWeight: 800 }} onClick={() => handleScroll("extra")}>Extra</Button>
+                                        <Box
+                                            onMouseEnter={(e) => setAnchorEl(e.currentTarget)}
+                                            onMouseLeave={() => setAnchorEl(null)}
+                                        >
+                                            <Button sx={{ color: "#ffa96b", fontSize: isMobile && 10, fontWeight: 800 }}>
+                                                More Menu <ArrowDropDownIcon />
+                                            </Button>
+
+                                            <Menu
+                                                anchorEl={anchorEl}
+                                                open={Boolean(anchorEl)}
+                                                onClose={() => setAnchorEl(null)}
+                                                PaperProps={{
+                                                    sx: {
+                                                        backgroundColor: "#f3a32b", // 🔥 yahan color set
+                                                        color: "#fff",
+                                                        borderRadius: "10px",
+                                                        mt: 1,
+                                                    },
+                                                }}
+                                            >
+                                                {menuItems.map((item, i) => (
+                                                    <MenuItem
+                                                        key={item.menuId}
+                                                        onClick={() => {
+                                                            handleScroll(item.menuId);
+                                                            setAnchorEl(null);
+                                                        }}
+
+                                                        sx={{
+                                                            "&:hover": {
+                                                                backgroundColor: "rgba(0,0,0,0.1)",
+                                                            },
+                                                        }}
+                                                    >
+                                                        {item.menuName}   {/* ✅ name show */}
+                                                    </MenuItem>
+                                                ))}
+                                            </Menu>
+                                        </Box>
+
+                                    </>
+                                }
+
+                            </Box>
 
 
-                        <Box sx={{ width: { xs: "100%", md: "300px" } }}>
-                            <div
-                                style={{
-                                    width: "100%",
-                                    position: "relative",
-                                    fontFamily: "Arial",
-                                }}
-                            >
+                            <Box sx={{ width: { xs: "100%", md: "300px" } }}>
+                                <div
+                                    style={{
+                                        width: "100%",
+                                        position: "relative",
+                                        fontFamily: "Arial",
+                                    }}
+                                >
 
-                                {/* INPUT */}
-                                <div style={{ position: "relative" }}>
-                                    <SearchIcon
-                                        style={{
-                                            position: "absolute",
-                                            left: "10px",
-                                            top: "50%",
-                                            transform: "translateY(-50%)",
-                                            color: "#000",
-                                            opacity: 0.6,
-                                        }}
-                                    />
+                                    {/* INPUT */}
+                                    <Box
+                                        sx={{
+                                            display: "flex",
+                                            alignItems: "center",
+                                            width: "80%",
+                                            padding: "6px",
+                                            borderRadius: "30px",
 
-                                    <input
-                                        type="text"
-                                        placeholder="Search food..."
-                                        value={Serach}
-                                        onChange={(e) => setSerach(e.target.value)}
-                                        style={{
-                                            width: "100%",
-                                            padding: "10px 10px 10px 35px",
-                                            borderRadius: "8px",
-                                            border: "2px solid #000",
-                                            outline: "none",
-                                            background: "#fff",
-                                            color: "#000",
-                                            fontSize: "14px",
-                                            fontWeight: "500",
-                                            transition: "0.2s ease",
-                                        }}
-                                    />
-                                </div>
-
-                                {/* DROPDOWN */}
-                                {check && Serach ? (
-                                    <div
-                                        style={{
-                                            position: "absolute",
-                                            width: "100%",
-                                            background: "#fff",
-                                            border: "2px solid #000",
-                                            borderTop: "none",
-                                            borderRadius: "0 0 8px 8px",
-                                            zIndex: 999,
                                         }}
                                     >
+                                        {/* INPUT */}
+                                        <InputBase
+                                            placeholder="Search delicious food..."
+
+                                            value={Serach}
+                                            onChange={(e) => setSerach(e.target.value)}
+                                            sx={{
+                                                flex: 1,
+                                                px: 2,
+                                                color: "#000",
+                                                background: "#fff",
+                                                borderRadius: "20px",
+                                                fontSize: "14px",
+                                                fontWeight: "500",
+                                                pt: "4px",
+
+                                                border: "3px solid #f3a32b",
+                                            }}
+                                        />
+
+                                        {/* SEARCH BUTTON */}
+
+                                    </Box>
+
+                                    {/* DROPDOWN */}
+                                    {check && Serach ? (
                                         <div
                                             style={{
-                                                padding: "10px",
-                                                color: "#000",
-                                                textAlign: "center",
-                                                fontWeight: "600",
+                                                position: "absolute",
+                                                width: "100%",
+                                                background: "#fff",
+                                                border: "2px solid #000",
+                                                borderTop: "none",
+                                                borderRadius: "0 0 8px 8px",
+                                                zIndex: 999,
                                             }}
                                         >
-                                            Item not found
+                                            <div
+                                                style={{
+                                                    padding: "10px",
+                                                    color: "#000",
+                                                    textAlign: "center",
+                                                    fontWeight: "600",
+                                                }}
+                                            >
+                                                Item not found
+                                            </div>
                                         </div>
-                                    </div>
-                                ) : (
-                                    <>
-                                        {Serach && (
+                                    ) : (
+                                        <>
+                                            {Serach && (
+                                                <div
+                                                    style={{
+                                                        position: "absolute",
+                                                        width: "100%",
+                                                        background: "#fff",
+                                                        border: "2px solid #f3a32b",
+                                                        borderTop: "none",
+                                                        borderRadius: "0 0 8px 8px",
+                                                        zIndex: 999,
+                                                        maxHeight: "200px",
+                                                        overflowY: "auto",
+                                                    }}
+                                                >
+                                                    {filterSerach.map((item, index) => (
+                                                        <div
+                                                            key={index}
+                                                            onClick={() => {
+                                                                setSerach(item.menuName);
+                                                                handleScroll(item.menuId);
+                                                            }}
+                                                            style={{
+                                                                padding: "10px",
+                                                                cursor: "pointer",
+                                                                color: "#000",
+                                                                fontSize: "14px",
+                                                                fontWeight: "500",
+                                                                borderBottom: "1px solid #eee",
+                                                            }}
+                                                            onMouseEnter={(e) =>
+                                                                (e.currentTarget.style.background = "#f3a32b")
+                                                            }
+                                                            onMouseLeave={(e) =>
+                                                                (e.currentTarget.style.background = "#fff")
+                                                            }
+                                                        >
+                                                            {item.menuName}
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            )}
+                                        </>
+                                    )}
+                                </div>
+                            </Box>
+                        </Toolbar>
+
+                    </AppBar>
+
+                </> :
+
+                    <>
+                        <AppBar position="static" sx={{ background: "#E53935",  }} elevation={0}>
+
+                            <Toolbar
+                                sx={{
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                    alignItems: "center",
+                                    gap: 2,
+                                    flexWrap: "wrap", // 🔥 responsive
+                                }}
+                            >
+                                {/* LEFT MENU */}
+                                <Box sx={{ display: "flex", flexWrap: "wrap", gap: isMobile ? 0 : 2 }}>
+                                    {isMobile ?
+
+                                        <Stack direction="row" alignItems="center" justifyContent={"center"} spacing={0} mt={"10px"} p={0}>
+                                            <Button
+                                                sx={{ color: "#fff", fontSize: isMobile && 10, fontWeight: 700 }}
+                                                onClick={() => handleScroll("burger")}
+                                            >
+                                                Burgers
+                                            </Button>
+
+                                            <Button
+                                                sx={{ color: "#fff", fontSize: isMobile && 10, fontWeight: 700 }}
+                                                onClick={() => handleScroll("broast")}
+                                            >
+                                                Broast
+                                            </Button>
+
+                                            <Button
+                                                sx={{ color: "#fff", fontSize: isMobile && 10, fontWeight: 700 }}
+                                                onClick={() => handleScroll("bbq")}
+                                            >
+                                                B.B.Q
+                                            </Button>
+
+                                            <Box
+                                                onMouseEnter={(e) => setAnchorEl(e.currentTarget)}
+                                                onMouseLeave={() => setAnchorEl(null)}
+                                            >
+                                                <Button sx={{ color: "#fff", fontSize: isMobile && 10, fontWeight: 700 }}>
+                                                    More Menu <ArrowDropDownIcon />
+                                                </Button>
+
+                                                <Menu
+                                                    anchorEl={anchorEl}
+                                                    open={Boolean(anchorEl)}
+                                                    onClose={() => setAnchorEl(null)}
+                                                    PaperProps={{
+                                                        sx: {
+                                                            backgroundColor: "#f3a32b", // 🔥 yahan color set
+                                                            color: "#fff",
+                                                            borderRadius: "10px",
+                                                            mt: 1,
+                                                        },
+                                                    }}
+                                                >
+                                                    {menuItems.map((item, i) => (
+                                                        <MenuItem
+                                                            key={item.menuId}
+                                                            onClick={() => {
+                                                                handleScroll(item.menuId);
+                                                                setAnchorEl(null);
+                                                            }}   // ✅ scroll
+                                                            sx={{
+                                                                "&:hover": {
+                                                                    backgroundColor: "rgba(0,0,0,0.1)",
+                                                                },
+                                                            }}
+                                                        >
+                                                            {item.menuName}   {/* ✅ name show */}
+                                                        </MenuItem>
+                                                    ))}
+
+                                                </Menu>
+                                            </Box>
+                                        </Stack>
+                                        :
+                                        <>
+                                            <Button onClick={() => {
+                                                handleScroll("burger");
+                                            }} sx={{ color: "#fff", fontSize: isMobile && 11, fontWeight: 800 }}>Burgers</Button>
+                                            <Button sx={{ color: "#fff", fontSize: isMobile && 11, fontWeight: 800 }} onClick={() => handleScroll("broast")}>Broast</Button>
+
+                                            <Button sx={{ color: "#fff", fontSize: isMobile && 11, fontWeight: 800 }} onClick={() => handleScroll("sandwich")}>Sandwich</Button>
+
+                                            <Button sx={{ color: "#fff", fontSize: isMobile && 11, fontWeight: 800 }} onClick={() => handleScroll("pizza")}>Pizza</Button>
+
+                                            <Button sx={{ color: "#fff", fontSize: isMobile && 11, fontWeight: 800 }} onClick={() => handleScroll("pasta")}>Pasta</Button>
+
+                                            <Button sx={{ color: "#fff", fontSize: isMobile && 11, fontWeight: 800 }} onClick={() => handleScroll("bbq")}>Bbq</Button>
+
+                                            <Button sx={{ color: "#fff", fontSize: isMobile && 11, fontWeight: 800 }} onClick={() => handleScroll("roll")}>Roll</Button>
+
+                                            <Button sx={{ color: "#fff", fontSize: isMobile && 11, fontWeight: 800 }} onClick={() => handleScroll("lasagna")}>Lasagna</Button>
+
+                                            <Button sx={{ color: "#fff", fontSize: isMobile && 11, fontWeight: 800 }} onClick={() => handleScroll("extra")}>Extra</Button>
+                                            <Box
+                                                onMouseEnter={(e) => setAnchorEl(e.currentTarget)}
+                                                onMouseLeave={() => setAnchorEl(null)}
+                                            >
+                                                <Button sx={{ color: "#ffa96b", fontSize: isMobile && 10, fontWeight: 800 }}>
+                                                    More Menu <ArrowDropDownIcon />
+                                                </Button>
+
+                                                <Menu
+                                                    anchorEl={anchorEl}
+                                                    open={Boolean(anchorEl)}
+                                                    onClose={() => setAnchorEl(null)}
+                                                    PaperProps={{
+                                                        sx: {
+                                                            backgroundColor: "#f3a32b", // 🔥 yahan color set
+                                                            color: "#fff",
+                                                            borderRadius: "10px",
+                                                            mt: 1,
+                                                        },
+                                                    }}
+                                                >
+                                                    {menuItems.map((item, i) => (
+                                                        <MenuItem
+                                                            key={item.menuId}
+                                                            onClick={() => {
+                                                                handleScroll(item.menuId);
+                                                                setAnchorEl(null);
+                                                            }}
+
+                                                            sx={{
+                                                                "&:hover": {
+                                                                    backgroundColor: "rgba(0,0,0,0.1)",
+                                                                },
+                                                            }}
+                                                        >
+                                                            {item.menuName}   {/* ✅ name show */}
+                                                        </MenuItem>
+                                                    ))}
+                                                </Menu>
+                                            </Box>
+
+                                        </>
+                                    }
+
+                                </Box>
+
+
+                                <Box sx={{ width: { xs: "100%", md: "300px" } }}>
+                                    <div
+                                        style={{
+                                            width: "100%",
+                                            position: "relative",
+                                            fontFamily: "Arial",
+                                            marginTop : isMobile && '-20px'
+                                        }}
+                                    >
+
+                                        {/* INPUT */}
+                                        <Box
+                                            sx={{
+                                                display: "flex",
+                                                alignItems: "center",
+                                                width: "80%",
+                                                padding: "6px",
+                                                borderRadius: "30px",
+
+                                            }}
+                                        >
+                                            {/* INPUT */}
+                                            <InputBase
+                                                placeholder="Search delicious food..."
+
+                                                value={Serach}
+                                                onChange={(e) => setSerach(e.target.value)}
+                                                sx={{
+                                                    flex: 1,
+                                                    px: 2,
+                                                    color: "#000",
+                                                    background: "#fff",
+                                                    borderRadius: "20px",
+                                                    fontSize: "14px",
+                                                    fontWeight: "500",
+                                                    pt: "4px",
+
+                                                    border: "3px solid #f3a32b",
+                                                }}
+                                            />
+
+                                            {/* SEARCH BUTTON */}
+
+                                        </Box>
+
+                                        {/* DROPDOWN */}
+                                        {check && Serach ? (
                                             <div
                                                 style={{
                                                     position: "absolute",
@@ -459,44 +723,72 @@ const Navbar = () => {
                                                     borderTop: "none",
                                                     borderRadius: "0 0 8px 8px",
                                                     zIndex: 999,
-                                                    maxHeight: "200px",
-                                                    overflowY: "auto",
                                                 }}
                                             >
-                                                {filterSerach.map((item, index) => (
-                                                    <div
-                                                        key={index}
-                                                        onClick={() => {
-                                                            setSerach(item.menuName);
-                                                            handleScroll(item.menuId);
-                                                        }}
-                                                        style={{
-                                                            padding: "10px",
-                                                            cursor: "pointer",
-                                                            color: "#000",
-                                                            fontSize: "14px",
-                                                            fontWeight: "500",
-                                                            borderBottom: "1px solid #eee",
-                                                        }}
-                                                        onMouseEnter={(e) =>
-                                                            (e.currentTarget.style.background = "#000")
-                                                        }
-                                                        onMouseLeave={(e) =>
-                                                            (e.currentTarget.style.background = "#fff")
-                                                        }
-                                                    >
-                                                        {item.menuName}
-                                                    </div>
-                                                ))}
+                                                <div
+                                                    style={{
+                                                        padding: "10px",
+                                                        color: "#000",
+                                                        textAlign: "center",
+                                                        fontWeight: "600",
+                                                    }}
+                                                >
+                                                    Item not found
+                                                </div>
                                             </div>
+                                        ) : (
+                                            <>
+                                                {Serach && (
+                                                    <div
+                                                        style={{
+                                                            position: "absolute",
+                                                            width: "100%",
+                                                            background: "#fff",
+                                                            border: "2px solid #f3a32b",
+                                                            borderTop: "none",
+                                                            borderRadius: "0 0 8px 8px",
+                                                            zIndex: 999,
+                                                            maxHeight: "200px",
+                                                            overflowY: "auto",
+                                                        }}
+                                                    >
+                                                        {filterSerach.map((item, index) => (
+                                                            <div
+                                                                key={index}
+                                                                onClick={() => {
+                                                                    setSerach(item.menuName);
+                                                                    handleScroll(item.menuId);
+                                                                }}
+                                                                style={{
+                                                                    padding: "10px",
+                                                                    cursor: "pointer",
+                                                                    color: "#000",
+                                                                    fontSize: "14px",
+                                                                    fontWeight: "500",
+                                                                    borderBottom: "1px solid #eee",
+                                                                }}
+                                                                onMouseEnter={(e) =>
+                                                                    (e.currentTarget.style.background = "#f3a32b")
+                                                                }
+                                                                onMouseLeave={(e) =>
+                                                                    (e.currentTarget.style.background = "#fff")
+                                                                }
+                                                            >
+                                                                {item.menuName}
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                )}
+                                            </>
                                         )}
-                                    </>
-                                )}
-                            </div>
-                        </Box>
-                    </Toolbar>
+                                    </div>
+                                </Box>
+                            </Toolbar>
 
-                </AppBar>
+                        </AppBar>
+
+                    </>}
+
 
                 <ModalLocation open={openModal} setOpen={setOpenModal} />
             </Box >

@@ -36,6 +36,7 @@ export default function DetailModal({ open, setOpen, deatailData }) {
 
     dispatch(addItem({ ...deatailData, qty }))
     alert("your item add to Cart successfuly🎉🎉")
+    setOpen(false)
 
   };
 
@@ -165,7 +166,7 @@ export default function DetailModal({ open, setOpen, deatailData }) {
                   onClick={() => setQty(qty > 1 ? qty - 1 : 1)}
                   sx={{
                     minWidth: 40,
-                    bgcolor: "#ff6b00",
+                    bgcolor: "#f3a32b",
                     color: "#fff",
                   }}
                 >
@@ -177,8 +178,8 @@ export default function DetailModal({ open, setOpen, deatailData }) {
                 <Button
                   onClick={() => setQty(qty + 1)}
                   sx={{
-                    minWidth: 40,
-                    bgcolor: "#ff6b00",
+                        minWidth: 40,
+                        bgcolor: "#f3a32b",
                     color: "#fff",
                   }}
                 >
@@ -191,7 +192,7 @@ export default function DetailModal({ open, setOpen, deatailData }) {
                 fullWidth
                 onClick={handleAddToCart}
                 sx={{
-                  bgcolor: "#ff6b00",
+                  bgcolor: "#f3a32b",
                   color: "#fff",
                   py: 1.5,
                   borderRadius: 2,

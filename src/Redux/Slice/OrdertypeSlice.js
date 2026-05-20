@@ -1,8 +1,11 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-const initialState = {
-    ordertype: "",
+const storedOrder = localStorage.getItem("orderInfo");
 
+const initialState = {
+    ordertype: storedOrder
+        ? JSON.parse(storedOrder).type
+        : "",
 };
 
 const orderSlice = createSlice({

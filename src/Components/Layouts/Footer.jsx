@@ -47,10 +47,10 @@ const Footer = () => {
                         </Typography>
 
                         <Typography mt={"10px"} variant="body2">
-                            <strong style={{fontWeight:"900"}}>Phone:</strong> +923060899926
+                            <strong style={{fontWeight:"900"}}>Phone:</strong> +923188201074
                         </Typography>
                         <Typography mt={"10px"}  variant="body2">
-                            <strong style={{fontWeight:"900"}}>Email:</strong> aladeebpk@gmail.com
+                            <strong style={{fontWeight:"900"}}>Email:</strong> info@bitey.com
                         </Typography>
                         <Typography mt={"10px"} variant="body2">
                             <strong style={{fontWeight:"900"}}>Address:</strong> Bitey - Yaseenabad, Plot no R 753,
@@ -101,34 +101,7 @@ const Footer = () => {
             </Stack>
 
             {/* Floating Buttons */}
-            <Stack
-                spacing={2}
-                sx={{
-                    position: "absolute",
-                    right: 20,
-                    bottom: 20
-                }}
-            >
-                <IconButton
-                    sx={{
-                        backgroundColor: "#ff5a3c",
-                        color: "#fff",
-                        "&:hover": { backgroundColor: "#ff3b1f" }
-                    }}
-                >
-                    <SearchIcon />
-                </IconButton>
-
-                <IconButton
-                    sx={{
-                        backgroundColor: "#ff5a3c",
-                        color: "#fff",
-                        "&:hover": { backgroundColor: "#ff3b1f" }
-                    }}
-                >
-                    <KeyboardArrowUpIcon />
-                </IconButton>
-            </Stack>
+           
         </Box>
     );
 };

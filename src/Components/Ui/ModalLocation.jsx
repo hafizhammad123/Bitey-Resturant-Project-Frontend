@@ -244,9 +244,21 @@ export default function ModalLocation({ open, setOpen }) {
                     {dilveryAddress ? dilveryAddress : "Select Area / Sub Region"}
                   </MenuItem>
 
-                  <MenuItem value="nazimabad">Nazimabad</MenuItem>
-                  <MenuItem value="gulshan">Gulshan</MenuItem>
-                  <MenuItem value="clifton">Clifton</MenuItem>
+                  <MenuItem value="fb-area-block-1">F.B Area Block 1</MenuItem>
+                  <MenuItem value="fb-area-block-2">F.B Area Block 2</MenuItem>
+                  <MenuItem value="fb-area-block-3">F.B Area Block 3</MenuItem>
+                  <MenuItem value="fb-area-block-4">F.B Area Block 4</MenuItem>
+                  <MenuItem value="fb-area-block-5">F.B Area Block 5</MenuItem>
+                  <MenuItem value="fb-area-block-6">F.B Area Block 6</MenuItem>
+                  <MenuItem value="fb-area-block-7">F.B Area Block 7</MenuItem>
+                  <MenuItem value="fb-area-block-8">F.B Area Block 8</MenuItem>
+                  <MenuItem value="fb-area-block-9">F.B Area Block 9</MenuItem>
+                  <MenuItem value="fb-area-block-10">F.B Area Block 10</MenuItem>
+                  <MenuItem value="fb-area-block-11">F.B Area Block 11</MenuItem>
+                  <MenuItem value="fb-area-block-12">F.B Area Block 12</MenuItem>
+                  <MenuItem value="fb-area-block-13">F.B Area Block 13</MenuItem>
+                  <MenuItem value="fb-area-block-14">F.B Area Block 14</MenuItem>
+                  <MenuItem value="fb-area-block-15">F.B Area Block 15</MenuItem>
 
 
                 </Select>
@@ -278,7 +290,7 @@ export default function ModalLocation({ open, setOpen }) {
                   <MenuItem value="" disabled>
                     Select Branch
                   </MenuItem>
-                  <MenuItem value="Yaseenabad, Plot no R 753, Block 9">Bitey - Yaseenabad, Plot no R 753, Block 9</MenuItem>
+                  <MenuItem value="Fb, Plot R 753, Block 9">Bitey - Yaseenabad, Plot no R 753, Block 9</MenuItem>
 
                 </Select>
               </FormControl>
