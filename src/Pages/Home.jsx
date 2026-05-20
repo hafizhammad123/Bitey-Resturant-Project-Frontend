@@ -1,6 +1,5 @@
 import MainLayout from '../Components/Layouts/MainLayout'
 import PopularItems from '../Components/Layouts/PopularItems'
-import Bbq from '../Components/Ui/Bbq'
 import Broast from '../Components/Ui/Broast'
 import BurgersCard from '../Components/Ui/BurgersCard'
 import DealCards from '../Components/Ui/DealsCard'
@@ -13,6 +12,7 @@ import PizzaSandwich from '../Components/Ui/PizzaSandwich'
 import Roll from '../Components/Ui/Roll'
 import SandWich from '../Components/Ui/Sandwich'
 import Slider from '../Components/Ui/Slider'
+import Bbq from "../Components/Ui/BBQ"
 
 const Home = () => {
   return (
